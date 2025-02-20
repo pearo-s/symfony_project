@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,7 @@ final class UserController extends AbstractController
         $users = $entityManager->getRepository(User::class)->findAll();
         return $this->render('user/index.html.twig', ['users' => $users]);
     }
+
 
     #[Route('/users', name: 'create_user', methods: ['POST'])]
     public function createUser(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
@@ -34,11 +36,13 @@ final class UserController extends AbstractController
         return new Response('New user with id ' . $user->getId());
     }
 
+
     #[Route('/users/{id}', name: 'show_user')]
     public function show(EntityManagerInterface $entityManager, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
+        $posts = $user->getPosts();
 
-        return $this->render('user/show.html.twig', ['user' => $user]);
+        return $this->render('user/show.html.twig', ['user' => $user, 'posts' => $posts]);
     }
 }

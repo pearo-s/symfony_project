@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-
-
 {% block body %}
     <div class="container">
 
@@ -13,32 +11,49 @@
 
         {% if user %}
 
-        <div class="row">
-            <div class="d-flex justify-content-lg-begin gap-2">
-                <a class="btn btn-success" href="">Edit</a>
+            <div class="row">
+                <div class="d-flex justify-content-lg-begin gap-2">
+                    <a class="btn btn-success" href="">Edit</a>
 
-                <form action="" method="POST">
-                    <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                    <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">Delete</button>
-                </form>
+                    <form action="" method="POST">
+                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <div class="row mt-3">
-            <div class="col-12">
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>ID: </strong>{{ user.id }}</li>
-                    <li class="list-group-item"><strong>Name: </strong>{{ user.name }}</li>
-                    <li class="list-group-item"><strong>Surname: </strong>{{ user.surname }}</li>
-                    <li class="list-group-item"><strong>Username: </strong>{{ user.username }}</li>
-                    <li class="list-group-item"><strong>Email: </strong>{{ user.email }}</li>
-                    <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob }}</li>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>ID: </strong>{{ user.id }}</li>
+                        <li class="list-group-item"><strong>Name: </strong>{{ user.name }}</li>
+                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname }}</li>
+                        <li class="list-group-item"><strong>Username: </strong>{{ user.username }}</li>
+                        <li class="list-group-item"><strong>Email: </strong>{{ user.email }}</li>
+                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob.format("Y-m-d") }}</li>
+                    </ul>
+                </div>
             </div>
-        </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center h2 my-3">User posts</h1>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <ul class="list-group">
+                        {% for post in posts %}
+                            <a href=""><li class="list-group-item">{{ post.title }}</li></a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
         {% else %}
 
-        <h2><i style="color: red">User does not exist</i></h2>
+            <h2><i style="color: red">User does not exist</i></h2>
 
         {% endif %}
 

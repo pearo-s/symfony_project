@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Table(name: '`users`')]
 class User implements PasswordAuthenticatedUserInterface
 {
-    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'users', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $posts;
 
     #[ORM\Id]
