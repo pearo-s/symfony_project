@@ -11,11 +11,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class UserController extends AbstractController
 {
-    #[Route('/user', name: 'app_user')]
+    #[Route('/users', name: 'index_user')]
+    public function index(EntityManagerInterface $entityManager)
+    {
+        $users = $entityManager->getRepository(User::class)->findAll();
+        return $this->render('user/index.html.twig', ['users' => $users]);
+    }
+
+    #[Route('/users', name: 'create_user', methods: ['POST'])]
     public function createUser(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
-        $user->setName('John');
+        $user->setName('John3');
         $user->setSurname('Smith');
         $user->setUsername('john_smith');
         $user->setEmail('john@gmail.com');
@@ -25,5 +32,13 @@ final class UserController extends AbstractController
         $entityManager->flush();
 
         return new Response('New user with id ' . $user->getId());
+    }
+
+    #[Route('/users/{id}', name: 'show_user')]
+    public function show(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        return $this->render('user/show.html.twig', ['user' => $user]);
     }
 }

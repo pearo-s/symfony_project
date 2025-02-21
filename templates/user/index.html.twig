@@ -1,20 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
-
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center h2 my-3">crud</h1>
+            </div>
+        </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/bekbosun/Desktop/projects/test-project/src/Controller/UserController.php</code></li>
-        <li>Your template at <code>/home/bekbosun/Desktop/projects/test-project/templates/user/index.html.twig</code></li>
-    </ul>
-</div>
+        <div class="row">
+            <div class="col-12">
+                <a class="btn btn-primary" href="">Add user</a>
+            </div>
+        </div>
+
+        <div class="table-responsive my-3">
+            {% if users %}
+            <table class="table table-hover">
+                <thead class="table-secondary">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Username</th>
+                    <th colspan="2" class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                <tr id="city-<?= $user['id'] ?>">
+                    <th scope="row">{{ user.id }}</th>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.surname }}</td>
+                    <td>{{ user.username }}</td>
+                    <td><?= $user['role'] ?></td>
+                    <td class="d-flex justify-content-center gap-2">
+
+                        <a class="btn btn-secondary" href="">Details</a>
+
+                        <form action="/" method="POST">
+                            <input type="hidden" name="id" value="">
+                            <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                                Delete
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <h5>Users not found</h5>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
