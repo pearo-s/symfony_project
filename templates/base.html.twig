@@ -11,5 +11,10 @@
     </head>
     <body>
         {% block body %}{% endblock %}
+        <script>
+            function confirmDelete() {
+                return confirm("Are you sure you want to delete this entry?");
+            }
+        </script>
     </body>
 </html>

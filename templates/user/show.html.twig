@@ -15,9 +15,12 @@
                 <div class="d-flex justify-content-lg-begin gap-2">
                     <a class="btn btn-success" href="">Edit</a>
 
-                    <form action="" method="POST">
-                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">Delete</button>
+                    <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                            Delete
+                        </button>
                     </form>
                 </div>
             </div>
