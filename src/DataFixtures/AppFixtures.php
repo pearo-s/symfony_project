@@ -22,7 +22,7 @@ class AppFixtures extends Fixture
     {
         $faker = Factory::create();
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $user = new User;
             $user->setName($faker->firstName());
             $user->setSurname($faker->lastName());

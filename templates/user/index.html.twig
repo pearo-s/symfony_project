@@ -5,7 +5,7 @@
 
         <div class="row">
             <div class="col-12">
-                <h1 class="text-center h2 my-3">crud</h1>
+                <h1 class="text-center h2 my-6">Admin panel</h1>
             </div>
         </div>
 
@@ -15,42 +15,69 @@
             </div>
         </div>
 
+
         <div class="table-responsive my-3">
-            {% if users %}
-            <table class="table table-hover">
-                <thead class="table-secondary">
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Surname</th>
-                    <th scope="col">Username</th>
-                    <th colspan="2" class="text-center">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for user in users %}
-                <tr id="city-<?= $user['id'] ?>">
-                    <th scope="row">{{ user.id }}</th>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.surname }}</td>
-                    <td>{{ user.username }}</td>
-                    <td class="d-flex justify-content-center gap-2">
 
-                        <a class="btn btn-secondary" href="{{ path('show_user', {'id': user.id}) }}">Details</a>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                {{ knp_pagination_render(pagination) }}
 
-                        <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                            <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
-                                Delete
-                            </button>
-                        </form>
+                <div class="d-flex align-items-center gap-5 mb-3">
 
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    <form method="get" action="{{ path('index_user') }}" class="d-flex" role="search">
+                        <input name="search" value="{{ app.request.get('search') }}" class="form-control me-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sort by:
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/users?sort=u.name">Name</a></li>
+                            <li><a class="dropdown-item" href="/users?sort=u.surname">Surname</a></li>
+                            <li><a class="dropdown-item" href="/users?sort=u.username">Username</a></li>
+                            <li><a class="dropdown-item" href="/users?sort=u.id">ID</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if pagination|length > 0 %}
+                <table class="table table-hover">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.id' ? 'style="color:red"' : ''}} scope="col">ID</th>
+                        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.name' ? 'style="color:red"' : ''}} scope="col">Name</th>
+                        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.surname' ? 'style="color:red"' : ''}} scope="col">Surname</th>
+                        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.username' ? 'style="color:red"' : ''}} scope="col">Username</th>
+                        <th colspan="2" class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in pagination %}
+                        <tr id="city-<?= $user['id'] ?>">
+                            <th scope="row">{{ user.id }}</th>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.surname }}</td>
+                            <td>{{ user.username }}</td>
+                            <td class="d-flex justify-content-center gap-2">
+
+                                <a class="btn btn-secondary" href="{{ path('show_user', {'id': user.id}) }}">Details</a>
+
+                                <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                    <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
                 <h5>Users not found</h5>
             {% endif %}

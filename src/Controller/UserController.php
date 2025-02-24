@@ -4,20 +4,38 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use function PHPUnit\Framework\isEmpty;
 
 final class UserController extends AbstractController
 {
     #[Route('/users', name: 'index_user')]
-    public function index(EntityManagerInterface $entityManager)
+    public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request)
     {
-        $users = $entityManager->getRepository(User::class)->findAll();
-        return $this->render('user/index.html.twig', ['users' => $users]);
+        $query = $userRepository->createQueryBuilder('u');
+
+        $sort = $request->query->get('sort', 'u.id');
+        $direction = $request->query->get('direction', 'asc');
+        //dd($direction);
+        $search = trim($request->query->get('search'));
+
+        if ($search !== '') {
+            $query->andWhere('u.name LIKE :q OR u.surname LIKE :q OR u.username LIKE :q')
+                ->setParameter('q', '%' . $search . '%');
+        }
+
+        $query->orderBy($sort, $direction);
+
+        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 10);
+
+        return $this->render('user/index.html.twig', ['pagination' => $pagination]);
     }
 
 

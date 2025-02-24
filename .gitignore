@@ -7,7 +7,9 @@
 /public/bundles/
 /var/
 /vendor/
-.idea/
+/.idea/
+/docker-compose.yml
+/Dockerfile
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
