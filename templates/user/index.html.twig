@@ -9,9 +9,17 @@
             </div>
         </div>
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         <div class="row">
             <div class="col-12">
-                <a class="btn btn-primary" href="">Add user</a>
+                <a class="btn btn-primary" href="{{ path('create_user') }}">Add user</a>
             </div>
         </div>
 
@@ -19,7 +27,10 @@
         <div class="table-responsive my-3">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                {{ knp_pagination_render(pagination) }}
+
+                <div>
+                    {{ knp_pagination_render(pagination) }}
+                </div>
 
                 <div class="d-flex align-items-center gap-5 mb-3">
 

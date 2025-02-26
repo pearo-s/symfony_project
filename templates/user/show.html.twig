@@ -9,11 +9,19 @@
             </div>
         </div>
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% if user %}
 
             <div class="row">
                 <div class="d-flex justify-content-lg-begin gap-2">
-                    <a class="btn btn-success" href="">Edit</a>
+                    <a class="btn btn-success" href="{{ path('edit_user', {'id': user.id}) }}">Edit</a>
 
                     <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
@@ -29,11 +37,11 @@
                 <div class="col-12">
                     <ul class="list-group">
                         <li class="list-group-item"><strong>ID: </strong>{{ user.id }}</li>
-                        <li class="list-group-item"><strong>Name: </strong>{{ user.name }}</li>
-                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname }}</li>
+                        <li class="list-group-item"><strong>Name: </strong>{{ user.name is empty ? '<i style="color: red">No data</i>' : user.name }}</li>
+                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname is empty ? '<i style="color: red">No data</i>' : user.surname }}</li>
                         <li class="list-group-item"><strong>Username: </strong>{{ user.username }}</li>
-                        <li class="list-group-item"><strong>Email: </strong>{{ user.email }}</li>
-                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob.format("Y-m-d") }}</li>
+                        <li class="list-group-item"><strong>Email: </strong>{{ user.email is empty ? '<i style="color: red">No data</i>' : user.email }}</li>
+                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob is empty ? '<i style="color: red">No data</i>' : user.dob.format('Y-m-d') }}</li>
                     </ul>
                 </div>
             </div>
@@ -44,13 +52,23 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-12">
+                    <a class="btn btn-primary" href="{{ path('create_post') }}">Add post</a>
+                </div>
+            </div>
+
             <div class="row mt-3">
                 <div class="col-12">
-                    <ul class="list-group">
-                        {% for post in posts %}
-                            <a href=""><li class="list-group-item">{{ post.title }}</li></a>
-                        {% endfor %}
-                    </ul>
+                    {% if posts is not empty %}
+                        <ul class="list-group">
+                            {% for post in posts %}
+                                <li class="list-group-item"><a class="link-dark" href="{{ path('show_post', {'id': post.id}) }}">{{ post.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <h2><i style="color: red">User has no posts</i></h2>
+                    {% endif %}
                 </div>
             </div>
 

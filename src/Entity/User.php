@@ -7,10 +7,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`users`')]
+#[UniqueEntity(
+    fields: ['username'],
+    message: 'There is already a user with this username.',
+)]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'There is already a user with this email.',
+)]
 class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user', cascade: ['remove'])]
@@ -22,21 +32,27 @@ class User implements PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50, maxMessage: "Max 50 characters")]
     private ?string $name = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50, maxMessage: "Max 50 characters")]
     private ?string $surname = null;
 
     #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank(message: "username is required")]
+    #[Assert\Length(min: 5, max: 50, minMessage: "Min 10 characters", maxMessage: "Max 50 characters")]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true, unique: true)]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+
     private ?\DateTimeInterface $dob = null;
 
 

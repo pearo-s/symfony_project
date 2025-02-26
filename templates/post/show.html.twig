@@ -1,20 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PostController!{% endblock %}
-
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/bekbosun/Desktop/projects/test-project/src/Controller/PostController.php</code></li>
-        <li>Your template at <code>/home/bekbosun/Desktop/projects/test-project/templates/post/index.html.twig</code></li>
-    </ul>
-</div>
+        {% if post %}
+
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center h2 my-3">{{ post.title }}</h1>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <p>{{ post.text }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="d-flex justify-content-lg-begin gap-2">
+                    <a class="btn btn-success" href="{{ path('edit_post', {'id': post.id}) }}">Edit</a>
+
+                    <form action="{{ path('delete_post', {'id': post.id}) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        {% else %}
+
+            <h2><i style="color: red">Post does not exist</i></h2>
+
+        {% endif %}
+
+    </div>
 {% endblock %}
