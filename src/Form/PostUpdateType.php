@@ -6,6 +6,7 @@ use App\Entity\Post;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,17 +18,11 @@ class PostUpdateType extends AbstractType
             ->add('title')
             ->add('text')
             ->add('is_published')
-            ->add('user_id')
-            ->add('created_at', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updated_at', null, [
-                'widget' => 'single_text',
-            ])
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'id',
             ])
+            ->add('update', SubmitType::class)
         ;
     }
 

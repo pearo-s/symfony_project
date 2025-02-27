@@ -30,6 +30,7 @@ class AppFixtures extends Fixture
             $user->setEmail($faker->email());
             $user->setPassword($this->passwordHasher->hashPassword($user, $faker->password()));
             $user->setDob(\DateTime::createFromFormat('Y-m-d', $faker->date('Y-m-d')));
+            $user->setRoles(['ROLE_USER']);
 
             $manager->persist($user);
 

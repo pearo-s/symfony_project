@@ -1,18 +1,22 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\Post;
 use App\Form\PostCreateType;
+use App\Form\PostUpdateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/admin/posts')]
+#[IsGranted('ROLE_ADMIN')]
 final class PostController extends AbstractController
 {
-    #[Route('/posts/create', name: 'create_post', methods: ['POST', 'GET'])]
+    #[Route('/create', name: 'create_post', methods: ['POST', 'GET'])]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $post = new Post();
@@ -33,12 +37,12 @@ final class PostController extends AbstractController
     }
 
 
-    #[Route('/posts/{id}/edit', name: 'edit_post', methods: ['POST', 'GET'])]
+    #[Route('/{id}/edit', name: 'edit_post', methods: ['POST', 'GET'])]
     public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
     {
         $post = $entityManager->find(Post::class, $id);
 
-        $form = $this->createForm(PostCreateType::class, $post);
+        $form = $this->createForm(PostUpdateType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -52,7 +56,7 @@ final class PostController extends AbstractController
     }
 
 
-    #[Route('/posts/{id}', name: 'delete_post', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'delete_post', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
@@ -65,7 +69,7 @@ final class PostController extends AbstractController
     }
 
 
-    #[Route('/posts/{id}', name: 'show_post')]
+    #[Route('/{id}', name: 'show_post')]
     public function show(EntityManagerInterface $entityManager, $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);

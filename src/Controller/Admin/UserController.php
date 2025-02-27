@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\UserCreateType;
@@ -13,11 +13,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
+#[Route('/admin/users')]
+#[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
-    #[Route('/users', name: 'index_user')]
+    #[Route('/', name: 'index_user')]
     public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $query = $userRepository->createQueryBuilder('u');
@@ -40,7 +43,7 @@ final class UserController extends AbstractController
     }
 
 
-    #[Route('/users/create', name: 'create_user', methods: ['POST', 'GET'])]
+    #[Route('/create', name: 'create_user', methods: ['POST', 'GET'])]
     public function create(EntityManagerInterface $entityManager, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
@@ -61,7 +64,7 @@ final class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form]);
     }
 
-    #[Route('/users/{id}/edit', name: 'edit_user', methods: ['POST', 'GET'])]
+    #[Route('/{id}/edit', name: 'edit_user', methods: ['POST', 'GET'])]
     public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
@@ -80,7 +83,7 @@ final class UserController extends AbstractController
     }
 
 
-    #[Route('/users/{id}', name: 'delete_user', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'delete_user', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
@@ -93,7 +96,7 @@ final class UserController extends AbstractController
     }
 
 
-    #[Route('/users/{id}', name: 'show_user')]
+    #[Route('/{id}', name: 'show_user')]
     public function show(EntityManagerInterface $entityManager, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
@@ -103,8 +106,6 @@ final class UserController extends AbstractController
         } else {
             $posts = null;
         }
-
-
 
         return $this->render('user/show.html.twig', ['user' => $user, 'posts' => $posts]);
     }

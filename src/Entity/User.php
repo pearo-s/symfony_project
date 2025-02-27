@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     fields: ['email'],
     message: 'There is already a user with this email.',
 )]
-class User implements PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $posts;
@@ -51,6 +52,9 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
+
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
 
     private ?\DateTimeInterface $dob = null;
@@ -64,6 +68,11 @@ class User implements PasswordAuthenticatedUserInterface
     public function getPosts(): Collection
     {
         return $this->posts;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 
     public function getId(): ?int
@@ -131,6 +140,21 @@ class User implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
     public function getDob(): ?\DateTimeInterface
     {
         return $this->dob;
@@ -141,5 +165,10 @@ class User implements PasswordAuthenticatedUserInterface
         $this->dob = $dob;
 
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+
     }
 }
