@@ -39,6 +39,10 @@ final class UserController extends AbstractController
 
         $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 10);
 
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('user/index_search.html.twig', ['pagination' => $pagination]);
+        }
+
         return $this->render('user/index.html.twig', ['pagination' => $pagination]);
     }
 

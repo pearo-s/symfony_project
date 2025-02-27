@@ -46,6 +46,19 @@
     function confirmDelete() {
         return confirm("Are you sure you want to delete this entry?");
     }
+
+    //ajax search
+    document.getElementById('search-input').addEventListener('input', function () {
+        let query = this.value.trim();
+        let url = '/admin/users?search=' + encodeURIComponent(query);
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('user-list').innerHTML = html;
+            })
+            .catch(error => console.error('Ошибка:', error));
+    });
 </script>
 </body>
 </html>
