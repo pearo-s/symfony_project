@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+
+        {% if post %}
+            <div class="row">
+                <div class="col-12">
+                    <i><h1 class="text-center h2 my-3">{{ post.title }}</h1></i>
+                    Author: <a href="">{{ post.getUser.getUsername }}</a>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <i><h4>{{ post.text }}</h4></i>
+                    <div class="mt-3">Published on: {{ post.getCreatedAt.format('Y-m-d') }}</div>
+                </div>
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                {{ form_start(form, {'action': path('create_commentary', {'id': post.id}), 'method': 'POST', 'attr': {'class': 'w-50 mt-5'}}) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            {% endif %}
+
+            {% if commentaries is not empty %}
+                {% for commentary in commentaries %}
+                    {% if commentary.isModerated %}
+                        <div class="card w-50 shadow-sm mt-5">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-0">{{ commentary.getUser.name }}</h5>
+                                        <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
+                                    </div>
+                                </div>
+                                <p class="card-text">
+                                    {{ commentary.text }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <h5 class="mt-5"><i style="color: red">There is no commentaries on this post</i></h5>
+            {% endif %}
+
+        {% else %}
+            <h2><i style="color: red">Post does not exist</i></h2>
+        {% endif %}
+    </div>
+
+{% endblock %}

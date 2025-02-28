@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Commentary;
 use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -21,6 +22,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
+        $users = [];
 
         for ($i = 0; $i < 100; $i++) {
             $user = new User;
@@ -33,20 +35,37 @@ class AppFixtures extends Fixture
             $user->setRoles(['ROLE_USER']);
 
             $manager->persist($user);
-
-            $postCount = rand(1, 5);
-            for ($j = 1; $j <= $postCount; $j++) {
-                $post = new Post();
-                $post->setUser($user);
-                $post->setTitle($faker->sentence(3));
-                $post->setText($faker->paragraph);
-                $post->setIsPublished($faker->numberBetween(0, 1));
-                $post->setCreatedAt();
-                $post->setUpdatedAt();
-
-                $manager->persist($post);
-            }
+            $users[] = $user;
         }
+
+
+            foreach ($users as $user) {
+                $postCount = rand(1, 5);
+                for ($j = 0; $j < $postCount; $j++) {
+                    $post = new Post();
+                    $post->setUser($user);
+                    $post->setTitle($faker->sentence(3));
+                    $post->setText($faker->text(1000));
+                    $post->setIsPublished($faker->numberBetween(0, 1));
+                    $post->setCreatedAt();
+                    $post->setUpdatedAt();
+
+                    $manager->persist($post);
+
+                    $commentaryCount = rand(5, 10);
+                    for ($x = 1; $x <= $commentaryCount; $x++) {
+                        $randomUser = $users[array_rand($users)];
+                        $commentary = new Commentary();
+                        $commentary->setPost($post);
+                        $commentary->setUser($randomUser);
+                        $commentary->setText($faker->paragraph);
+                        $commentary->setCreatedAt();
+                        $commentary->setUpdatedAt();
+
+                        $manager->persist($commentary);
+                    }
+                }
+            }
 
         $manager->flush();
     }

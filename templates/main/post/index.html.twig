@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center h2 my-6">Posts</h1>
+            </div>
+        </div>
+
+        <div class="table-responsive my-3">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div>
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+
+            </div>
+
+
+            {% if pagination|length > 0 %}
+                <ul class="list-group list-group-item-info">
+                    {% for post in pagination %}
+                        <li class="list-group-item"><a class="link-dark" href="{{ path("main_show_post", {'id': post.id}) }}">{{ post.id }}. {{ post.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h5>Posts not found</h5>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

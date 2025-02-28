@@ -33,7 +33,7 @@ final class PostController extends AbstractController
             return $this->redirectToRoute('show_user', ['id' => $post->getUser()->getId()]);
         }
 
-        return $this->render('post/create.html.twig', ['form' => $form]);
+        return $this->render('admin/post/create.html.twig', ['form' => $form]);
     }
 
 
@@ -52,7 +52,7 @@ final class PostController extends AbstractController
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
 
-        return $this->render('post/edit.html.twig', ['form' => $form]);
+        return $this->render('admin/post/edit.html.twig', ['form' => $form]);
     }
 
 
@@ -73,9 +73,10 @@ final class PostController extends AbstractController
     public function show(EntityManagerInterface $entityManager, $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
+        $commentaries = $post->getCommentaries();
 
-        return $this->render('post/show.html.twig', [
-            'post' => $post,
+        return $this->render('admin/post/show.html.twig', [
+            'post' => $post, 'commentaries' => $commentaries
         ]);
     }
 }

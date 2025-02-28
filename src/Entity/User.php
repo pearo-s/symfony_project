@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`users`')]
+#[ORM\Table(name: 'users')]
 #[UniqueEntity(
     fields: ['username'],
     message: 'There is already a user with this username.',
@@ -42,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: "username is required")]
-    #[Assert\Length(min: 5, max: 50, minMessage: "Min 10 characters", maxMessage: "Max 50 characters")]
+    #[Assert\Length(min: 5, max: 50, minMessage: "Min 5 characters", maxMessage: "Max 50 characters")]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true, unique: true)]
@@ -59,10 +59,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?\DateTimeInterface $dob = null;
 
+    /**
+     * @var Collection<int, Commentary>
+     */
+    #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'user', cascade: ['remove'])]
+    private Collection $commentaries;
+
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->commentaries = new ArrayCollection();
     }
 
     public function getPosts(): Collection
@@ -170,5 +177,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
 
+    }
+
+    /**
+     * @return Collection<int, Commentary>
+     */
+    public function getCommentaries(): Collection
+    {
+        return $this->commentaries;
+    }
+
+    public function addCommentary(Commentary $commentary): static
+    {
+        if (!$this->commentaries->contains($commentary)) {
+            $this->commentaries->add($commentary);
+            $commentary->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentary(Commentary $commentary): static
+    {
+        if ($this->commentaries->removeElement($commentary)) {
+            // set the owning side to null (unless already changed)
+            if ($commentary->getUser() === $this) {
+                $commentary->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
