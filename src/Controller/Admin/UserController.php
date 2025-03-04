@@ -39,6 +39,10 @@ final class UserController extends AbstractController
 
         $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 10);
 
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('user/index_search.html.twig', ['pagination' => $pagination]);
+        }
+
         return $this->render('admin/user/index.html.twig', ['pagination' => $pagination]);
     }
 
@@ -61,11 +65,11 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('show_user', ['id' => $user->getId()]);
         }
 
-        return $this->render('admin/user/create.html.twig', ['form' => $form]);
+        return $this->render('user/create.html.twig', ['form' => $form]);
     }
 
     #[Route('/{id}/edit', name: 'edit_user', methods: ['POST', 'GET'])]
-    public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
 
@@ -79,7 +83,7 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('show_user', ['id' => $user->getId()]);
         }
 
-        return $this->render('admin/user/edit.html.twig', ['user' => $user, 'form' => $form]);
+        return $this->render('user/edit.html.twig', ['user' => $user, 'form' => $form]);
     }
 
 
@@ -107,6 +111,6 @@ final class UserController extends AbstractController
             $posts = null;
         }
 
-        return $this->render('admin/user/show.html.twig', ['user' => $user, 'posts' => $posts]);
+        return $this->render('user/show.html.twig', ['user' => $user, 'posts' => $posts]);
     }
 }
