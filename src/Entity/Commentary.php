@@ -32,7 +32,7 @@ class Commentary
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_moderated = null;
+    private bool $is_moderated = false;
 
     public function getId(): ?int
     {

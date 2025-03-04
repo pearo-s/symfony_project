@@ -20,12 +20,13 @@ final class PostController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $post = new Post();
+        $user = $this->getUser();
 
         $form = $this->createForm(PostCreateType::class, $post);
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
+            $post->setUser($user);
             $entityManager->persist($post);
             $entityManager->flush();
             $this->addFlash('success', 'Post successfully created');

@@ -3,6 +3,22 @@
 {% block body %}
     <div class="container">
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <a class="btn btn-primary" href="{{ path('main_create_post') }}">Create post</a>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row">
             <div class="col-12">
                 <h1 class="text-center h2 my-6">Posts</h1>
@@ -23,7 +39,9 @@
             {% if pagination|length > 0 %}
                 <ul class="list-group list-group-item-info">
                     {% for post in pagination %}
-                        <li class="list-group-item"><a class="link-dark" href="{{ path("main_show_post", {'id': post.id}) }}">{{ post.id }}. {{ post.title }}</a></li>
+                        <li class="list-group-item"><a class="link-dark"
+                                                       href="{{ path("main_show_post", {'id': post.id}) }}">{{ post.id }}
+                                . {{ post.title }}</a></li>
                     {% endfor %}
                 </ul>
             {% else %}

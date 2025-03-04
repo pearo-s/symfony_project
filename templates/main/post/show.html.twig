@@ -4,6 +4,14 @@
 
     <div class="container">
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% if post %}
             <div class="row">
                 <div class="col-12">
@@ -32,7 +40,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
                                     <div>
-                                        <h5 class="card-title mb-0">{{ commentary.getUser.name }}</h5>
+                                        <h5 class="card-title mb-0" style="{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "color: red" : "color: darkgreen" }}">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.name }}</h5>
                                         <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
                                     </div>
                                 </div>

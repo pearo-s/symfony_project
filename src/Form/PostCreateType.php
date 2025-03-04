@@ -25,10 +25,6 @@ class PostCreateType extends AbstractType
             /*->add('updated_at', null, [
                 'widget' => 'single_text',
             ])*/
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
             ->add('create', SubmitType::class)
         ;
     }
