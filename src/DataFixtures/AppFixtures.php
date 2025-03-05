@@ -22,6 +22,18 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
+
+        $admin = new User();
+        $admin->setName('admin');
+        $admin->setSurname('admin');
+        $admin->setUsername('admin');
+        $admin->setEmail('admin@gmail.com');
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, '123'));
+        $admin->setDob(\DateTime::createFromFormat('Y-m-d', $faker->date()));
+        $admin->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($admin);
+
         $users = [];
 
         for ($i = 0; $i < 100; $i++) {
@@ -61,6 +73,7 @@ class AppFixtures extends Fixture
                         $commentary->setText($faker->paragraph);
                         $commentary->setCreatedAt();
                         $commentary->setUpdatedAt();
+                        $commentary->setIsModerated($faker->numberBetween(0, 1));
 
                         $manager->persist($commentary);
                     }

@@ -40,7 +40,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
                                     <div>
-                                        <h5 class="card-title mb-0" style="{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "color: red" : "color: darkgreen" }}">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.name }}</h5>
+                                        <h5 class="card-title mb-0 {{ 'ROLE_ADMIN' in commentary.User.getRoles ? "text-danger" : "text-success" }}">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5>
                                         <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
                                     </div>
                                 </div>
@@ -52,11 +52,11 @@
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <h5 class="mt-5"><i style="color: red">There is no commentaries on this post</i></h5>
+                <h5 class="mt-5"><i class="text-danger font-italic">There is no commentaries on this post</i></h5>
             {% endif %}
 
         {% else %}
-            <h2><i style="color: red">Post does not exist</i></h2>
+            <h2><i class="text-danger font-italic">Post does not exist</i></h2>
         {% endif %}
     </div>
 

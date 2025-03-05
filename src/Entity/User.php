@@ -41,8 +41,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $surname = null;
 
     #[ORM\Column(length: 50, unique: true, nullable: true)]
-    #[Assert\NotBlank(message: "username is required")]
-    #[Assert\Length(min: 5, max: 50, minMessage: "Min 5 characters", maxMessage: "Max 50 characters")]
+    
+    #[Assert\Length(min: 3, max: 50, minMessage: "Min 3 characters", maxMessage: "Max 50 characters")]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, unique: true)]

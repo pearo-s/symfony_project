@@ -18,8 +18,8 @@ class UserCreateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class)
-            ->add('surname', TextType::class)
+            ->add('name', TextType::class, ['required' => false])
+            ->add('surname', TextType::class, ['required' => false])
             ->add('username', TextType::class)
             ->add('email', EmailType::class)
             ->add('password', PasswordType::class)

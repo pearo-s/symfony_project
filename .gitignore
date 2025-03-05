@@ -8,8 +8,7 @@
 /var/
 /vendor/
 /.idea/
-/docker-compose.yml
-/Dockerfile
+
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

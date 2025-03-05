@@ -44,10 +44,10 @@
                             Sort by:
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/users?sort=u.name">Name</a></li>
-                            <li><a class="dropdown-item" href="/users?sort=u.surname">Surname</a></li>
-                            <li><a class="dropdown-item" href="/users?sort=u.username">Username</a></li>
-                            <li><a class="dropdown-item" href="/users?sort=u.id">ID</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.name', direction: 'asc'}) }}">Name</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.surname', direction: 'asc'}) }}">Surname</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.username', direction: 'asc'}) }}">Username</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.id', direction: 'asc'}) }}">ID</a></li>
                         </ul>
                     </div>
                 </div>
@@ -56,10 +56,12 @@
 
             {% if pagination|length > 0 %}
                 <div id="user-list">
-                    {% include 'user/index_search.html.twig' %}
+                    {% include 'admin/user/index_search.html.twig' %}
                 </div>
             {% else %}
-                <h5>Users not found</h5>
+                <div class="d-flex justify-content-center align-items-start vh-100 pt-5 text-danger">
+                    <h5>Users not found</h5>
+                </div>
             {% endif %}
         </div>
     </div>

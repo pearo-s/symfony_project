@@ -3,12 +3,6 @@
 {% block body %}
     <div class="container">
 
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center h2 my-3">User details</h1>
-            </div>
-        </div>
-
         {% for label, messages in app.flashes %}
             {% for message in messages %}
                 <div class="alert alert-{{ label }}">
@@ -18,6 +12,12 @@
         {% endfor %}
 
         {% if user %}
+
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center h2 my-3">User details</h1>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="d-flex justify-content-lg-begin gap-2">
@@ -37,11 +37,11 @@
                 <div class="col-12">
                     <ul class="list-group">
                         <li class="list-group-item"><strong>ID: </strong>{{ user.id }}</li>
-                        <li class="list-group-item"><strong>Name: </strong>{{ user.name is empty ? '<i style="color: red">No data</i>' : user.name }}</li>
-                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname is empty ? '<i style="color: red">No data</i>' : user.surname }}</li>
+                        <li class="list-group-item"><strong>Name: </strong>{{ user.name is empty ? '<i class="text-danger font-italic">No data</i>' : user.name }}</li>
+                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname is empty ? '<i class="text-danger font-italic">No data</i>' : user.surname }}</li>
                         <li class="list-group-item"><strong>Username: </strong>{{ user.username }}</li>
-                        <li class="list-group-item"><strong>Email: </strong>{{ user.email is empty ? '<i style="color: red">No data</i>' : user.email }}</li>
-                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob is empty ? '<i style="color: red">No data</i>' : user.dob.format('Y-m-d') }}</li>
+                        <li class="list-group-item"><strong>Email: </strong>{{ user.email }}</li>
+                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob is empty ? '<i class="text-danger font-italic">No data</i>' : user.dob.format('Y-m-d') }}</li>
                     </ul>
                 </div>
             </div>
@@ -67,14 +67,16 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <h2><i style="color: red">User has no posts</i></h2>
+                        <h2><i class="text-danger font-italic">User has no posts</i></h2>
                     {% endif %}
                 </div>
             </div>
 
         {% else %}
 
-            <h2><i style="color: red">User does not exist</i></h2>
+            <div class="d-flex justify-content-center align-items-start vh-100 pt-5 text-danger font-italic">
+                <h2><i>User does not exist</i></h2>
+            </div>
 
         {% endif %}
 

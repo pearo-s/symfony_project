@@ -74,7 +74,13 @@ final class PostController extends AbstractController
     public function show(EntityManagerInterface $entityManager, $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
-        $commentaries = $post->getCommentaries();
+
+        if ($post) {
+            $commentaries = $post->getCommentaries();
+        } else {
+            $commentaries = null;
+        }
+
 
         return $this->render('admin/post/show.html.twig', [
             'post' => $post, 'commentaries' => $commentaries

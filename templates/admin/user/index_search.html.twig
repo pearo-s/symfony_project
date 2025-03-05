@@ -1,10 +1,10 @@
 <table class="table table-hover">
     <thead class="table-secondary">
     <tr>
-        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.id' ? 'style="color:red"' : ''}} scope="col">ID</th>
-        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.name' ? 'style="color:red"' : ''}} scope="col">Name</th>
-        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.surname' ? 'style="color:red"' : ''}} scope="col">Surname</th>
-        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.username' ? 'style="color:red"' : ''}} scope="col">Username</th>
+        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.id' ? 'class="text-danger font-italic"' : ''}} scope="col">ID</th>
+        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.name' ? 'class="text-danger font-italic"' : ''}} scope="col">Name</th>
+        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.surname' ? 'class="text-danger font-italic"' : ''}} scope="col">Surname</th>
+        <th {{ app.request.query.has('sort') and app.request.query.get('sort') == 'u.username' ? 'class="text-danger font-italic"' : ''}} scope="col">Username</th>
         <th colspan="2" class="text-center">Actions</th>
     </tr>
     </thead>
