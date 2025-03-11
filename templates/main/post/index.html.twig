@@ -36,7 +36,7 @@
             </div>
 
 
-            {% if pagination|length > 0 %}
+            {#{% if pagination|length > 0 %}
                 <ul class="list-group list-group-item-info">
                     {% for post in pagination %}
                         <li class="list-group-item"><a class="link-dark"
@@ -46,7 +46,25 @@
                 </ul>
             {% else %}
                 <h5 >Posts not found</h5>
-            {% endif %}
+            {% endif %}#}
+
+            <div class="container">
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    {% for post in pagination %}
+                        <a href="{{ path('main_show_post', {id: post.id}) }}">
+                            <div class="col">
+                                <div class="card post">
+                                    <img src="{{ post.image ? asset('uploads/post/' ~ post.thumbnail) : asset('uploads/no_image.png') }}" class="card-img-top post-image" alt="{{ post.title }}">
+                                    <div class="card-body post-title">
+                                        {{ post.title }}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

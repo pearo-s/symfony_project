@@ -65,6 +65,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $commentaries;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $thumbnail = null;
+
 
     public function __construct()
     {
@@ -205,6 +211,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $commentary->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getThumbnail(): ?string
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail(?string $thumbnail): static
+    {
+        $this->thumbnail = $thumbnail;
 
         return $this;
     }

@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
         "fakerphp/faker": "^1.24",
+        "intervention/image": "^3.11",
         "knplabs/knp-paginator-bundle": "^6.6",
         "knpuniversity/oauth2-client-bundle": "^2.18",
         "league/oauth2-google": "^4.0",

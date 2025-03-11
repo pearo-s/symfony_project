@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Post;
 use App\Form\PostCreateType;
 use App\Form\PostUpdateType;
+use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +40,7 @@ final class PostController extends AbstractController
 
 
     #[Route('/{id}/edit', name: 'edit_post', methods: ['POST', 'GET'])]
-    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
+    public function edit(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         $post = $entityManager->find(Post::class, $id);
 
@@ -47,6 +48,13 @@ final class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $uploadFile = $this->getParameter('post_image_directory');
+                $postRepository->removeImageFiles($uploadFile, $post);
+                $postRepository->saveImage($uploadFile, $post, $imageFile);
+            }
+
             $entityManager->flush();
             $this->addFlash('success', 'Post successfully updated');
 
@@ -58,9 +66,12 @@ final class PostController extends AbstractController
 
 
     #[Route('/{id}', name: 'delete_post', methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    public function delete(PostRepository $postRepository, EntityManagerInterface $entityManager, int $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
+        $uploadDir = $this->getParameter('post_image_directory');
+
+        $postRepository->removeImageFiles($uploadDir, $post);
 
         $entityManager->remove($post);
         $entityManager->flush();

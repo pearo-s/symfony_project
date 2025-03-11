@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Post
 {
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
     #[ORM\Id]
@@ -31,9 +32,6 @@ class Post
     private ?bool $is_published = null;
 
     #[ORM\Column]
-    private ?int $user_id = null;
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
@@ -44,6 +42,12 @@ class Post
      */
     #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $commentaries;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $thumbnail = null;
 
     public function __construct()
     {
@@ -103,18 +107,6 @@ class Post
         return $this;
     }
 
-    public function getUserId(): ?int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -163,6 +155,30 @@ class Post
                 $commentary->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getThumbnail(): ?string
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail(?string $thumbnail): static
+    {
+        $this->thumbnail = $thumbnail;
 
         return $this;
     }

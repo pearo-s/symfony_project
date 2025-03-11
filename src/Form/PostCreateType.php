@@ -7,6 +7,7 @@ use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,6 +22,11 @@ class PostCreateType extends AbstractType
             ->add('title', TextType::class)
             ->add('text', TextareaType::class)
             ->add('is_published', CheckboxType::class, ['required' => false])
+            ->add('image', FileType::class, [
+                'label' => 'Image',
+                'mapped' => false,
+                'required' => false,
+            ])
             ->add('create', SubmitType::class)
         ;
     }

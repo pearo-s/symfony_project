@@ -20,9 +20,11 @@ class Commentary
     private ?string $text = null;
 
     #[ORM\ManyToOne(inversedBy: 'commentaries')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'commentaries')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Post $post = null;
 
     #[ORM\Column]

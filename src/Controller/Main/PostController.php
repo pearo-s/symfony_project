@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PostController extends AbstractController
 {
     #[Route('/create', name: 'main_create_post', methods: ['POST', 'GET'])]
-    public function create(EntityManagerInterface $entityManager, Request $request): Response
+    public function create(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
         $post = new Post();
         $user = $this->getUser();
@@ -25,7 +25,15 @@ final class PostController extends AbstractController
         $form = $this->createForm(PostCreateType::class, $post);
         $form->handleRequest($request);
 
+        $uploadFile = $this->getParameter('post_image_directory');
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $postRepository->saveImage($uploadFile, $post, $imageFile);
+            }
+
             $post->setUser($user);
             $entityManager->persist($post);
             $entityManager->flush();
@@ -43,7 +51,7 @@ final class PostController extends AbstractController
     {
         $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1');
 
-        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 10);
+        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 12);
 
         return $this->render('main/post/index.html.twig', [
             'pagination' => $pagination,
@@ -54,7 +62,7 @@ final class PostController extends AbstractController
     #[Route('/{id}', name: 'main_show_post')]
     public function show(PostRepository $postRepository, int $id): Response
     {
-        $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1', "p.id = $id")->getQuery();//->find($id);
+        $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1', "p.id = $id")->getQuery();
         $post = $query->getOneOrNullResult();
         $commentaries = null;
 
