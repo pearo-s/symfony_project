@@ -1,0 +1,37 @@
+<div class="currency-widget">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center p-2">
+            <h6 class="mb-0">Exchange rates</h6>
+        </div>
+        <div class="card-body p-2">
+            <table class="table table-sm text-center mb-0">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th class="date-header">{{ rates[0].todayDate }}</th>
+                    <th class="date-header">{{ rates[0].tomorrowDate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for x in 4..0 %}
+                    <tr>
+                        <td><img src="https://flagcdn.com/w40/{{ countryCodes[x] }}.png" alt="{{ countryCodes[x] }}" class="currency-flag">{{ rates[x].currency }}</td>
+                        <td class="small-text">{{ rates[x].todayRate|number_format(4) }}</td>
+                        <td class="small-text">{{ rates[x].tomorrowRate|number_format(4) }}
+                            {% if rates[x].todayRate > rates[x].tomorrowRate %}
+                                <span class="rate-down">↓</span>
+                            {% elseif rates[x].todayRate < rates[x].tomorrowRate %}
+                                <span class="rate-up">↑</span>
+                            {% else %}
+                                <span>=</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

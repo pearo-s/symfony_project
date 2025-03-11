@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Admin panel{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('styles/exchange_rate_widget.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block stylesheets %}
     {% endblock %}
@@ -23,6 +24,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ path('index_user') }}">Admin panel</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ path('app_setting') }}">Widgets setting</a>
+                </li>
             {% endif %}
         </ul>
 
@@ -32,7 +36,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <b>{{ app.user.Username }}</b>
+                            <b>{{ app.user.username }}</b>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>

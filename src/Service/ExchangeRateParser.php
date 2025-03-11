@@ -26,15 +26,21 @@ class ExchangeRateParser
         $html = $response->getContent();
 
         $crawler = new Crawler($html);
-        $crawler->filter('.exchange-rates-body table tbody tr')->each(function (Crawler $row) {
+
+        $dates = explode(' ', $crawler->filter('.exchange-rates-head table tbody tr')->eq(0)->text());
+
+        $crawler->filter('.exchange-rates-body table tbody tr')->each(function (Crawler $row) use ($dates) {
             $currency = trim($row->filter('.excurr')->text());
-            $todayRate = floatval(str_replace(',', '.', $row->filter('.exrate')->eq(0)->text()));
-            $tomorrowRate = floatval(str_replace(',', '.', $row->filter('.exrate')->eq(1)->text()));
+            $todayRate = str_replace(',', '.', $row->filter('.exrate')->eq(0)->text());
+            $tomorrowRate = str_replace(',', '.', $row->filter('.exrate')->eq(1)->text());
+
 
             $exchangeRate = new ExchangeRate();
             $exchangeRate->setCurrency($currency);
             $exchangeRate->setTodayRate($todayRate);
             $exchangeRate->setTomorrowRate($tomorrowRate);
+            $exchangeRate->setTodayDate($dates[0]);
+            $exchangeRate->setTomorrowDate($dates[1]);
 
             $this->entityManager->persist($exchangeRate);
         });

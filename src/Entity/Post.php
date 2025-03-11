@@ -123,7 +123,7 @@ class Post
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
-        $this->created_at = new \DateTimeImmutable();
+            $this->created_at = new \DateTimeImmutable();
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable

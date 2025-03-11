@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center h2 my-3">Widgets setting</h1>
+        </div>
+    </div>
+
+    {{ form_start(form, {'attr': {'class': 'w-25 mt-5'}}) }}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    </div>
+
+{% endblock %}

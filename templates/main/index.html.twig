@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if settings.isShown %}
+        {% include 'main/widgets/exchange_rate_nbkr.html.twig' %}
+    {% endif %}
+{% endblock %}

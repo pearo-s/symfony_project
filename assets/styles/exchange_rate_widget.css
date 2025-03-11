@@ -1,0 +1,11 @@
+.currency-widget {
+    position: fixed;
+    right: 20px;
+    top: 200px;
+    width: 300px;
+    z-index: 1000;
+}
+.rate-up { color: green; font-size: 12px; }
+.rate-down { color: red; font-size: 12px; }
+.currency-flag { width: 20px; margin-right: 5px; }
+.small-text { font-size: 14px; }
