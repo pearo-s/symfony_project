@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class PostController extends AbstractController
 {
     #[Route('/create', name: 'create_post', methods: ['POST', 'GET'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(PostRepository $postRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $post = new Post();
         $user = $this->getUser();
@@ -27,6 +27,12 @@ final class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $postRepository->saveImage($post, $imageFile);
+            }
+
             $post->setUser($user);
             $entityManager->persist($post);
             $entityManager->flush();
@@ -50,9 +56,8 @@ final class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $uploadFile = $this->getParameter('post_image_directory');
-                $postRepository->removeImageFiles($uploadFile, $post);
-                $postRepository->saveImage($uploadFile, $post, $imageFile);
+                $postRepository->removeImageFiles($post);
+                $postRepository->saveImage($post, $imageFile);
             }
 
             $entityManager->flush();
@@ -69,9 +74,8 @@ final class PostController extends AbstractController
     public function delete(PostRepository $postRepository, EntityManagerInterface $entityManager, int $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
-        $uploadDir = $this->getParameter('post_image_directory');
 
-        $postRepository->removeImageFiles($uploadDir, $post);
+        $postRepository->removeImageFiles($post);
 
         $entityManager->remove($post);
         $entityManager->flush();

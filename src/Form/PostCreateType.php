@@ -3,8 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Post;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -20,7 +19,7 @@ class PostCreateType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            ->add('text', TextareaType::class)
+            ->add('text', CKEditorType::class)
             ->add('is_published', CheckboxType::class, ['required' => false])
             ->add('image', FileType::class, [
                 'label' => 'Image',

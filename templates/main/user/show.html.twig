@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if user %}
+
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center h2 my-3">User details</h1>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <img src="{{ user.avatar ? asset('uploads/user/' ~ user.avatar) : asset('uploads/no_avatar.png')}} " class="mb-5" width="15%" alt="user_avatar">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Name: </strong>{{ user.name is empty ? '<i class="text-danger font-italic">No data</i>' : user.name }}</li>
+                        <li class="list-group-item"><strong>Surname: </strong>{{ user.surname is empty ? '<i class="text-danger font-italic">No data</i>' : user.surname }}</li>
+                        <li class="list-group-item"><strong>Username: </strong>{{ user.username }}</li>
+                        <li class="list-group-item"><strong>Date of birth: </strong>{{ user.dob is empty ? '<i class="text-danger font-italic">No data</i>' : user.dob.format('Y-m-d') }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="d-flex justify-content-lg-begin gap-2">
+                    <a class="btn btn-success" href="{{ path('edit_user', {'id': user.id}) }}">Edit</a>
+
+                    <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+
+        {% else %}
+
+            <div class="d-flex justify-content-center align-items-start vh-100 pt-5 text-danger font-italic">
+                <h2><i>User does not exist</i></h2>
+            </div>
+
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Post;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -17,13 +18,18 @@ class PostUpdateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class)
-            ->add('text', TextareaType::class)
+            ->add('title', TextType::class, ['empty_data' => ''])
+            ->add('text', CKEditorType::class, ['empty_data' => ''])
             ->add('is_published', CheckboxType::class, ['required' => false])
             ->add('image', FileType::class, [
                 'label' => 'Image',
                 'mapped' => false,
                 'required' => false,
+            ])
+            ->add('removeFile', CheckboxType::class, [
+                'label' => 'Delete image',
+                'required' => false,
+                'mapped' => false,
             ])
             ->add('update', SubmitType::class)
         ;
