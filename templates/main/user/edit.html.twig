@@ -3,15 +3,44 @@
 {% block body %}
     <div class="container">
 
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center h2 my-3">User editing</h1>
-            </div>
-        </div>
+        {% if user %}
 
-        {{ form_start(form, {'attr': {'class': 'w-50'}}) }}
-            {{ form_widget(form) }}
-        {{ form_end(form) }}
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center h2 my-3">User editing</h1>
+                </div>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'w-50 mt-5'}}) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.surname) }}
+            {{ form_row(form.username) }}
+
+            <div class="form-group">
+                {% if userThumbnail is not empty %}
+                    <div class="mb-3">
+                        <img src="{{ asset('uploads/user/' ~ userThumbnail) }}" alt="current_image" width="200">
+                    </div>
+                    {{ form_row(form.removeFile) }}
+                {% endif %}
+            </div>
+
+            {{ form_row(form.avatar) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.dob) }}
+            {{ form_row(form.update) }}
+            {{ form_row(form._token) }}
+
+            {{ form_end(form, {'render_rest': false}) }}
+
+        {% else %}
+
+            <div class="d-flex justify-content-center align-items-start vh-100 pt-5">
+                <h2><i class="text-danger font-italic">User does not exist</i></h2>
+            </div>
+
+        {% endif %}
 
     </div>
 {% endblock %}

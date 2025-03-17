@@ -1,6 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     {% if settings.isShown %}
         {% include 'main/widgets/exchange_rate_nbkr.html.twig' %}
     {% endif %}

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
+use App\Entity\User;
 use App\Form\PostCreateType;
 use App\Form\PostUpdateType;
 use App\Repository\PostRepository;
@@ -17,11 +18,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class PostController extends AbstractController
 {
-    #[Route('/create', name: 'create_post', methods: ['POST', 'GET'])]
-    public function create(PostRepository $postRepository, Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/create/{id}', name: 'create_post', methods: ['POST', 'GET'])]
+    public function create(PostRepository $postRepository, Request $request, EntityManagerInterface $entityManager, User $user): Response
     {
         $post = new Post();
-        $user = $this->getUser();
 
         $form = $this->createForm(PostCreateType::class, $post);
         $form->handleRequest($request);
@@ -49,15 +49,23 @@ final class PostController extends AbstractController
     public function edit(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         $post = $entityManager->find(Post::class, $id);
+        $postThumbnail = $post ? $post->getThumbnail() : null;
 
         $form = $this->createForm(PostUpdateType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
+
             if ($imageFile) {
                 $postRepository->removeImageFiles($post);
                 $postRepository->saveImage($post, $imageFile);
+            }
+
+            if ($form->get('removeFile')->getData()) {
+                $postRepository->removeImageFiles($post);
+                $post->setImage(null);
+                $post->setThumbnail(null);
             }
 
             $entityManager->flush();
@@ -66,7 +74,7 @@ final class PostController extends AbstractController
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
 
-        return $this->render('admin/post/edit.html.twig', ['form' => $form]);
+        return $this->render('admin/post/edit.html.twig', ['post' => $post, 'form' => $form, 'postThumbnail' => $postThumbnail]);
     }
 
 

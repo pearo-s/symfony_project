@@ -46,7 +46,7 @@ final class PostController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'main_edit_post', methods: ['POST', 'GET'])]
-    #[IsGranted('POST_EDIT', 'post')]
+    #[IsGranted('POST_EDIT', subject: 'post')]
     public function edit(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request, int $id, Post $post): Response
     {
         $post = $entityManager->find(Post::class, $id);
@@ -57,6 +57,7 @@ final class PostController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
+
             if ($imageFile) {
                 $postRepository->removeImageFiles($post);
                 $postRepository->saveImage($post, $imageFile);
@@ -74,7 +75,21 @@ final class PostController extends AbstractController
             return $this->redirectToRoute('main_show_post', ['id' => $post->getId()]);
         }
 
-        return $this->render('main/post/edit.html.twig', ['form' => $form, 'postThumbnail' => $postThumbnail]);
+        return $this->render('main/post/edit.html.twig', ['post' => $post, 'form' => $form, 'postThumbnail' => $postThumbnail]);
+    }
+
+    #[Route('/{id}', name: 'main_delete_post', methods: ['DELETE'])]
+    public function delete(PostRepository $postRepository, EntityManagerInterface $entityManager, int $id): Response
+    {
+        $post = $entityManager->getRepository(Post::class)->find($id);
+
+        $postRepository->removeImageFiles($post);
+
+        $entityManager->remove($post);
+        $entityManager->flush();
+        $this->addFlash('success', 'Post successfully deleted');
+
+        return $this->redirectToRoute('main_index_post');
     }
 
     #[Route('/', name: 'main_index_post')]

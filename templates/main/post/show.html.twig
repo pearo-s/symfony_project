@@ -19,7 +19,7 @@
                     <div class="d-flex justify-content-lg-begin gap-2">
                         <a class="btn btn-success" href="{{ path('main_edit_post', {id: post.id}) }}">Edit</a>
 
-                        <form action="{{ path('delete_post', {'id': post.id}) }}" method="post">
+                        <form action="{{ path('main_delete_post', {'id': post.id}) }}" method="post">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
                             <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
@@ -62,7 +62,7 @@
                                     <img src="{{ commentary.User.thumbnail ? asset('uploads/user/' ~ commentary.User.thumbnail) : asset('uploads/no_avatar.png') }}"
                                          width="15%" class="rounded me-3" alt="User avatar">
                                     <div>
-                                        <h5 class="card-title mb-0 {{ 'ROLE_ADMIN' in commentary.User.getRoles ? "text-danger" : "text-success" }}">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5>
+                                        <a href="{{ path('main_show_user', {id: commentary.user.id}) }}" class="link-{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "danger" : "success" }}"><h5 class="card-title mb-0">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5></a>
                                         <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
                                     </div>
                                 </div>
@@ -78,7 +78,9 @@
             {% endif %}
 
         {% else %}
-            <h2><i class="text-danger font-italic">Post does not exist</i></h2>
+            <div class="d-flex justify-content-center align-items-start vh-100 pt-5">
+                <h2><i class="text-danger font-italic">Post does not exist</i></h2>
+            </div>
         {% endif %}
     </div>
 

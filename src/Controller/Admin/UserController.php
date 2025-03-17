@@ -42,7 +42,7 @@ final class UserController extends AbstractController
 
 
     #[Route('/create', name: 'create_user', methods: ['POST', 'GET'])]
-    public function create(EntityManagerInterface $entityManager, Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function create(EntityManagerInterface $entityManager, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
 
@@ -50,6 +50,12 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $avatarFile = $form->get('avatar')->getData();
+
+            if ($avatarFile) {
+                $userRepository->saveAvatar($user, $avatarFile);
+            }
+
             $user->setPassword($passwordHasher->hashPassword($user, $request->request->all()['user_create']['password']));
             $entityManager->persist($user);
             $entityManager->flush();
@@ -62,21 +68,35 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit_user', methods: ['POST', 'GET'])]
-    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
+        $userThumbnail = $user ? $user->getThumbnail() : null;
 
         $form = $this->createForm(UserUpdateType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $avatarFile = $form->get('avatar')->getData();
+
+            if ($avatarFile) {
+                $userRepository->removeAvatarFiles($user);
+                $userRepository->saveAvatar($user, $avatarFile);
+            }
+
+            if ($form->get('removeFile')->getData()) {
+                $userRepository->removeAvatarFiles($user);
+                $user->setAvatar(null);
+                $user->setThumbnail(null);
+            }
+
             $entityManager->flush();
             $this->addFlash('success', 'User successfully updated');
 
             return $this->redirectToRoute('show_user', ['id' => $user->getId()]);
         }
 
-        return $this->render('admin/user/edit.html.twig', ['user' => $user, 'form' => $form]);
+        return $this->render('admin/user/edit.html.twig', ['user' => $user, 'form' => $form, 'userThumbnail' => $userThumbnail]);
     }
 
 
