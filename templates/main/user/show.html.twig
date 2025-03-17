@@ -23,7 +23,7 @@
             <div class="row mt-3">
                 <div class="col-12">
                     <img src="{{ user.avatar ? asset('uploads/user/' ~ user.avatar) : asset('uploads/no_avatar.png') }} "
-                         class="mb-5" width="15%" alt="user_avatar">
+                         class="rounded mb-5" width="200" height="130" alt="user_avatar">
                 </div>
             </div>
 
@@ -52,7 +52,7 @@
                         <form action="{{ path('main_delete_user', {'id': user.id}) }}" method="post">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                            <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                            <button type="submit" onclick="return confirmAction()" class="btn btn-danger">
                                 Delete profile
                             </button>
                         </form>

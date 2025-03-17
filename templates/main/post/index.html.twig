@@ -11,6 +11,12 @@
             {% endfor %}
         {% endfor %}
 
+        <div class="row">
+            <div class="col-12 mt-5">
+                <h1 class="text-center h2 my-6">Posts</h1>
+            </div>
+        </div>
+
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <div class="row mt-5">
                 <div class="col-12">
@@ -18,12 +24,6 @@
                 </div>
             </div>
         {% endif %}
-
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center h2 my-6">Posts</h1>
-            </div>
-        </div>
 
         <div class="table-responsive my-3">
 
@@ -33,9 +33,29 @@
                     {{ knp_pagination_render(pagination) }}
                 </div>
 
+                <div class="d-flex align-items-center gap-5 mb-3">
+
+                    <form method="get" action="{{ path('index_user') }}" class="d-flex" role="search">
+                        <input name="search" value="{{ app.request.get('search') }}" id="search-input" class="form-control me-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+
+                    {#<div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sort by:
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.name', direction: 'asc'}) }}">Name</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.surname', direction: 'asc'}) }}">Surname</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.username', direction: 'asc'}) }}">Username</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.id', direction: 'asc'}) }}">ID</a></li>
+                        </ul>
+                    </div>#}
+                </div>
+
             </div>
 
-            <div class="container">
+            <div class="container mt-5">
                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
                     {% for post in pagination %}
                         <a href="{{ path('main_show_post', {id: post.id}) }}">
@@ -44,6 +64,9 @@
                                     <img src="{{ post.image ? asset('uploads/post/' ~ post.thumbnail) : asset('uploads/no_image.png') }}" class="card-img-top post-image" alt="{{ post.title }}">
                                     <div class="card-body post-title">
                                         {{ post.title }}
+                                    </div>
+                                    <div class="post-date text-muted small ml-3">
+                                        {{ post.createdAt|date('d.m.Y') }}
                                     </div>
                                 </div>
                             </div>

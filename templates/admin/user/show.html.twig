@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.base.html.twig' %}
 
 {% block body %}
     <div class="container">
@@ -14,7 +14,7 @@
         {% if user %}
 
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mt-5">
                     <h1 class="text-center h2 my-3">User details</h1>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     <form action="{{ path('delete_user', {'id': user.id}) }}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                        <button type="submit" onclick="return confirmAction()" class="btn btn-danger">
                             Delete
                         </button>
                     </form>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mt-5">
                     <h1 class="text-center h2 my-3">User posts</h1>
                 </div>
             </div>

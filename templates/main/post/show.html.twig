@@ -22,7 +22,7 @@
                         <form action="{{ path('main_delete_post', {'id': post.id}) }}" method="post">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-                            <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                            <button type="submit" onclick="return confirmAction()" class="btn btn-danger">
                                 Delete
                             </button>
                         </form>
@@ -60,7 +60,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
                                     <img src="{{ commentary.User.thumbnail ? asset('uploads/user/' ~ commentary.User.thumbnail) : asset('uploads/no_avatar.png') }}"
-                                         width="15%" class="rounded me-3" alt="User avatar">
+                                         width="70" height="60" class="rounded me-3" alt="User avatar">
                                     <div>
                                         <a href="{{ path('main_show_user', {id: commentary.user.id}) }}" class="link-{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "danger" : "success" }}"><h5 class="card-title mb-0">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5></a>
                                         <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>

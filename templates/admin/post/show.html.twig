@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.base.html.twig' %}
 
 {% block body %}
     <div class="container">
@@ -20,7 +20,7 @@
                     <form action="{{ path('delete_post', {'id': post.id}) }}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">
+                        <button type="submit" onclick="return confirmAction()" class="btn btn-danger">
                             Delete
                         </button>
                     </form>
@@ -67,7 +67,7 @@
                                 <div class="d-flex justify-content-lg-begin gap-2">
                                     <form action="{{ path('confirm_commentary', {'id': commentary.id}) }}"
                                           method="post">
-                                        <button type="submit" onclick="return confirmCommentary()"
+                                        <button type="submit" onclick="return confirmAction()"
                                                 class="btn btn-primary btn-sm">Confirm
                                         </button>
                                     </form>
@@ -75,7 +75,7 @@
                                     <form action="{{ path('delete_commentary', {'id': commentary.id}) }}" method="post">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-                                        <button type="submit" onclick="return confirmDelete()"
+                                        <button type="submit" onclick="return confirmAction()"
                                                 class="btn btn-danger btn-sm">
                                             Delete
                                         </button>

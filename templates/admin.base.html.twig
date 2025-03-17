@@ -13,18 +13,18 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-primary">
+<nav class="navbar navbar-expand-lg bg-secondary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/"><b>Home</b></a>
+        <a class="navbar-brand" href="{{ path('index_user') }}"><b>Home</b></a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             {% if is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_ADMIN') %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ path('index_user') }}">Admin panel</a>
+                    <a class="nav-link active" aria-current="page" href="{{ path('main_index_post') }}">Main site</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ path('app_setting') }}">Widgets setting</a>
                 </li>
             {% endif %}
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{{ path('main_index_post') }}">Posts</a>
-            </li>
         </ul>
 
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -34,13 +34,10 @@
 
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <img src="{{ asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="50" height="50">
+                            <img src="{{ asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="50px" height="50px">
                             <b>{{ app.user.username }}</b>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" aria-current="page" href="{{ path('main_show_user', {id: app.user.id}) }}">My profile</a>
-                            </li>
                             <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
                         </ul>
                     </li>
@@ -62,7 +59,7 @@
         return confirm("Are you sure?");
     }
 
-    //ajax search for posts
+    //ajax search for users
     document.getElementById('search-input').addEventListener('input', function () {
         let query = this.value.trim();
         let url = '/admin/users?search=' + encodeURIComponent(query);
