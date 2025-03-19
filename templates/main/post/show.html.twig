@@ -48,31 +48,22 @@
             </div>
 
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                {{ form_start(form, {'action': path('create_commentary', {'id': post.id}), 'method': 'POST', 'attr': {'class': 'w-50 mt-5'}}) }}
+                {{ form_start(form, {'action': path('create_commentary', {'id': post.id}), 'method': 'POST', 'attr': {'class': 'w-50 mt-5 mb-5'}}) }}
                 {{ form_widget(form) }}
                 {{ form_end(form) }}
             {% endif %}
 
             {% if commentaries is not empty %}
-                {% for commentary in commentaries %}
-                    {% if commentary.isModerated %}
-                        <div class="card w-50 shadow-sm mt-5 mb-5">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="{{ commentary.User.thumbnail ? asset('uploads/user/' ~ commentary.User.thumbnail) : asset('uploads/no_avatar.png') }}"
-                                         width="70" height="60" class="rounded me-3" alt="User avatar">
-                                    <div>
-                                        <a href="{{ path('main_show_user', {id: commentary.user.id}) }}" class="link-{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "danger" : "success" }}"><h5 class="card-title mb-0">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5></a>
-                                        <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
-                                    </div>
-                                </div>
-                                <p class="card-text">
-                                    {{ commentary.text|raw }}
-                                </p>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+
+                <div class="btn-group ms-1">
+                    <button type="button" class="btn btn-outline-primary sort-btn" data-sort="date">newest</button>
+                    <button type="button" class="btn btn-outline-primary sort-btn" data-sort="likes">top</button>
+                </div>
+
+                <div id="commentaries-container">
+                    {% include 'main/post/index_sort_commentaries.html.twig' %}
+                </div>
+
             {% else %}
                 <h5 class="mt-5"><i class="text-danger font-italic">There is no commentaries on this post</i></h5>
             {% endif %}
@@ -83,5 +74,155 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+
+        //ajax likes
+        document.getElementById("commentaries-container").addEventListener("click", function (event) {
+            if (event.target.closest(".like-button")) {
+                const button = event.target.closest(".like-button");
+                let commentaryId = button.dataset.commentaryId;
+                let heartIcon = button.querySelector("i");
+                let likesCount = button.nextElementSibling;
+
+                fetch(`/commentaries/${commentaryId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            heartIcon.classList.toggle("bi-heart-fill", data.liked);
+                            heartIcon.classList.toggle("bi-heart", !data.liked);
+                            heartIcon.classList.toggle("text-danger", data.liked);
+                            likesCount.textContent = data.likes_count;
+                        }
+                    })
+                    .catch(error => console.error("Ошибка:", error));
+            }
+        });
+
+        //ajax commentary sorting
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".sort-btn").forEach(button => {
+                button.addEventListener("click", function () {
+
+                    document.querySelectorAll(".sort-btn").forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    this.classList.add('active');
+
+                    const sortType = this.getAttribute("data-sort");
+                    const postId = "{{ post.id }}";
+
+                    fetch(`/posts/${postId}/commentaries/sort/${sortType}`, {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById("commentaries-container").innerHTML = html;
+                        })
+                        .catch(error => console.error("Error:", error));
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Edit button processing
+            document.querySelectorAll(".edit-commentary-button").forEach(button => {
+                button.addEventListener("click", function () {
+                    const commentaryId = this.closest(".card").dataset.commentaryId;
+                    const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
+                    const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
+                    const editButton = this.closest(".card-body").querySelector(".edit-commentary-button");
+                    const deleteButton = this.closest(".card-body").querySelector(".delete-commentary-button");
+
+                    // Hide comment text and show edit form
+                    commentaryText.style.display = "none";
+                    editButton.style.display = "none";
+                    deleteButton.style.display = "none";
+
+                    editForm.style.display = "block";
+                });
+            });
+
+            // Cancel button processing
+            document.querySelectorAll(".cancel-edit-button").forEach(button => {
+                button.addEventListener("click", function () {
+                    const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
+                    const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
+                    const editButton = this.closest(".card-body").querySelector(".edit-commentary-button");
+                    const deleteButton = this.closest(".card-body").querySelector(".delete-commentary-button");
+
+                    // Hide edit form and show comment text
+                    editForm.style.display = "none";
+                    commentaryText.style.display = "block";
+                    editButton.style.display = "inline-block";
+                    deleteButton.style.display = "inline-block";
+                });
+            });
+
+            // Editing form submission processing(not ready)
+            /*document.querySelectorAll(".edit-commentary-form").forEach(form => {
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+
+                    const commentaryId = this.dataset.commentaryId;
+                    const formData = new FormData(this);
+
+                    fetch(`/commentaries/${commentaryId}/edit`, {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
+                                const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
+
+                                // Update commentary text
+                                commentaryText.innerHTML = data.text;
+                                commentaryText.style.display = "block";
+                                editForm.style.display = "none";
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
+                });
+            });*/
+
+            // Delete button processing
+            document.querySelectorAll(".delete-commentary-button").forEach(button => {
+                button.addEventListener("click", function () {
+                    if (confirmAction()) {
+                        const commentaryId = this.closest(".card").dataset.commentaryId;
+
+                        fetch(`/commentaries/${commentaryId}`, {
+                            method: "DELETE",
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    this.closest(".card").remove();
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                    }
+                });
+            });
+        });
+    </script>
 
 {% endblock %}

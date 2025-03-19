@@ -1,0 +1,46 @@
+{% for commentary in commentaries %}
+    {% if commentary.isModerated %}
+        <div class="card w-50 shadow-sm mt-5 mb-5" data-commentary-id="{{ commentary.id }}">
+
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{{ commentary.User.thumbnail ? asset('uploads/user/' ~ commentary.User.thumbnail) : asset('uploads/no_avatar.png') }}"
+                         width="70" height="60" class="rounded me-3" alt="User avatar">
+                    <div>
+                        <a href="{{ path('main_show_user', {id: commentary.user.id}) }}" class="link-{{ 'ROLE_ADMIN' in commentary.User.getRoles ? "danger" : "success" }}">
+                            <h5 class="card-title mb-0">{{ post.User.Id == commentary.User.Id ? "(H)" : "" }}{{ commentary.getUser.username }}</h5>
+                        </a>
+                        <small class="text-muted">{{ commentary.getCreatedAt.format("Y-m-d") }}</small>
+                    </div>
+                </div>
+
+                <p class="card-text commentary-text">
+                    {{ commentary.text|raw }}
+                </p>
+
+                <!-- Форма для асинхронного редактирования, по умолчанию скрыт -->
+                <form class="edit-commentary-form" style="display: none;" data-commentary-id="{{ commentary.id }}">
+                    <textarea class="form-control mb-2" name="text">{{ commentary.text }}</textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button type="button" class="btn btn-secondary btn-sm cancel-edit-button">Cancel</button>
+                </form>
+
+                {% if app.user and commentary.user.id is same as app.user.id %}
+                    <div class="d-flex justify-content-lg-begin gap-2">
+                        <button type="button" class="btn btn-success btn-sm edit-commentary-button">Edit</button>
+                        <button type="button" class="btn btn-danger btn-sm delete-commentary-button">Delete</button>
+                    </div>
+                {% endif %}
+
+
+                <div class="position-absolute top-0 end-0 p-2">
+                    <button class="btn btn-outline-danger border-0 p-0 like-button" data-commentary-id="{{ commentary.id }}">
+                        <i class="bi {% if app.user and commentary.isLikedBy(app.user) %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+                    </button>
+                    <span class="ms-1 like-count">{{ commentary.getCommentaryLikes().count }}</span>
+                </div>
+            </div>
+
+        </div>
+    {% endif %}
+{% endfor %}

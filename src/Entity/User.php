@@ -71,11 +71,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnail = null;
 
+    /**
+     * @var Collection<int, CommentaryLike>
+     */
+    #[ORM\OneToMany(targetEntity: CommentaryLike::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $commentaryLikes;
+
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->commentaries = new ArrayCollection();
+        $this->commentaryLikes = new ArrayCollection();
     }
 
     public function getPosts(): Collection
@@ -235,6 +242,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setThumbnail(?string $thumbnail): static
     {
         $this->thumbnail = $thumbnail;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommentaryLike>
+     */
+    public function getCommentaryLikes(): Collection
+    {
+        return $this->commentaryLikes;
+    }
+
+    public function addCommentaryLike(CommentaryLike $commentaryLike): static
+    {
+        if (!$this->commentaryLikes->contains($commentaryLike)) {
+            $this->commentaryLikes->add($commentaryLike);
+            $commentaryLike->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaryLike(CommentaryLike $commentaryLike): static
+    {
+        if ($this->commentaryLikes->removeElement($commentaryLike)) {
+            // set the owning side to null (unless already changed)
+            if ($commentaryLike->getUser() === $this) {
+                $commentaryLike->setUser(null);
+            }
+        }
 
         return $this;
     }

@@ -35,12 +35,12 @@
 
                 <div class="d-flex align-items-center gap-5 mb-3">
 
-                    <form method="get" action="{{ path('index_user') }}" class="d-flex" role="search">
+                    <form method="get" action="{{ path('main_index_post') }}" class="d-flex" role="search">
                         <input name="search" value="{{ app.request.get('search') }}" id="search-input" class="form-control me-2" type="text" placeholder="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
 
-                    {#<div class="dropdown">
+                    {#<div class="dropdown"> sorting
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Sort by:
                         </button>
@@ -55,26 +55,35 @@
 
             </div>
 
-            <div class="container mt-5">
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
-                    {% for post in pagination %}
-                        <a href="{{ path('main_show_post', {id: post.id}) }}">
-                            <div class="col">
-                                <div class="card post">
-                                    <img src="{{ post.image ? asset('uploads/post/' ~ post.thumbnail) : asset('uploads/no_image.png') }}" class="card-img-top post-image" alt="{{ post.title }}">
-                                    <div class="card-body post-title">
-                                        {{ post.title }}
-                                    </div>
-                                    <div class="post-date text-muted small ml-3">
-                                        {{ post.createdAt|date('d.m.Y') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+            {% if pagination|length > 0 %}
 
-                    {% endfor %}
+                <div id="post-list">
+                    {% include 'main/post/index_search.html.twig' %}
                 </div>
-            </div>
+
+            {% else %}
+
+                <div class="d-flex justify-content-center align-items-start vh-100 pt-5 text-danger">
+                    <h5>Posts not found</h5>
+                </div>
+
+            {% endif %}
+
         </div>
     </div>
+
+    <script>
+        //ajax search for posts
+        document.getElementById('search-input').addEventListener('input', function () {
+            let query = this.value.trim();
+            let url = '/posts?search=' + encodeURIComponent(query);
+
+            fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('post-list').innerHTML = html;
+                })
+                .catch(error => console.error('Ошибка:', error));
+        });
+    </script>
 {% endblock %}

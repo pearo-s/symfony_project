@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -53,5 +54,15 @@ class PostRepository extends ServiceEntityRepository
                 unlink($thumbnailPath);
             }
         }
+    }
+
+    public function createSearchBuilder(?string $search, QueryBuilder $query): QueryBuilder
+    {
+        if ($search !== '') {
+            $query->andWhere('p.title LIKE :q')
+                ->setParameter('q', '%' . $search . '%');
+        }
+
+        return $query;
     }
 }

@@ -34,7 +34,7 @@
 
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <img src="{{ asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="50" height="50">
+                            <img src="{{ app.user.thumbnail is empty ? asset('uploads/no_avatar.png') : asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="70" height="60">
                             <b>{{ app.user.username }}</b>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -61,19 +61,6 @@
     function confirmAction() {
         return confirm("Are you sure?");
     }
-
-    //ajax search for posts
-    document.getElementById('search-input').addEventListener('input', function () {
-        let query = this.value.trim();
-        let url = '/admin/users?search=' + encodeURIComponent(query);
-
-        fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('user-list').innerHTML = html;
-            })
-            .catch(error => console.error('Ошибка:', error));
-    });
 </script>
 </body>
 </html>

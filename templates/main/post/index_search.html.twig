@@ -1,0 +1,21 @@
+<div class="container mt-5">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for post in pagination %}
+
+            <a href="{{ path('main_show_post', {id: post.id}) }}">
+                <div class="col">
+                    <div class="card post">
+                        <img src="{{ post.image ? asset('uploads/post/' ~ post.thumbnail) : asset('uploads/no_image.png') }}" class="card-img-top post-image" alt="{{ post.title }}">
+                        <div class="card-body post-title">
+                            {{ post.title }}
+                        </div>
+                        <div class="post-date text-muted small ml-3">
+                            {{ post.createdAt|date('d.m.Y') }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        {% endfor %}
+    </div>
+</div>

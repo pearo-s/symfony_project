@@ -97,7 +97,15 @@ final class PostController extends AbstractController
     {
         $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1');
 
+        $search = trim($request->get('search'));
+
+        $query = $postRepository->createSearchBuilder($search, $query);
+
         $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 12);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('main/post/index_search.html.twig', ['pagination' => $pagination]);
+        }
 
         return $this->render('main/post/index.html.twig', [
             'pagination' => $pagination,
@@ -110,6 +118,7 @@ final class PostController extends AbstractController
     {
         $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1', "p.id = $id")->getQuery();
         $post = $query->getOneOrNullResult();
+
         $commentaries = null;
 
         $form = $this->createForm(CommentaryCreateType::class);

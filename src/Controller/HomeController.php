@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\ExchangeRate;
 use App\Entity\WidgetSetting;
 use App\Repository\ExchangeRateRepository;
 use Doctrine\ORM\EntityManagerInterface;
