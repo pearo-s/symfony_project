@@ -7,7 +7,6 @@ use App\Entity\CommentaryLike;
 use App\Entity\Post;
 use App\Form\CommentaryCreateType;
 use App\Repository\CommentaryLikeRepository;
-use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

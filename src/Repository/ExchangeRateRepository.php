@@ -18,9 +18,6 @@ class ExchangeRateRepository extends ServiceEntityRepository
 
     public function findLastFive()
     {
-        /*$start = new \DateTimeImmutable('today midnight');
-        $end = new \DateTimeImmutable('tomorrow midnight');*/
-
         return $this->createQueryBuilder('e')
             ->orderBy('e.id', 'DESC')
             ->setMaxResults(5)

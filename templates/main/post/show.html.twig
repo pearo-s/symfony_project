@@ -41,25 +41,27 @@
                 <div class="col-12">
                     <i><h4>{{ post.text|raw }}</h4></i>
                     {% if post.image %}
-                        <img src="{{ asset('uploads/post/' ~ post.image) }}" class="mt-5" width="100%" alt="{{ post.title }}">
+                        <img src="{{ asset('uploads/post/' ~ post.image) }}" class="mt-5" width="100%"
+                             alt="{{ post.title }}">
                     {% endif %}
                     <div class="mt-3">Published on: {{ post.getCreatedAt.format('Y-m-d') }}</div>
                 </div>
             </div>
 
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                {{ form_start(form, {'action': path('create_commentary', {'id': post.id}), 'method': 'POST', 'attr': {'class': 'w-50 mt-5 mb-5'}}) }}
+                {{ form_start(form, {'action': path('create_commentary', {'id': post.id}), 'method': 'POST', 'attr': {'class': 'w-50 mt-5'}}) }}
                 {{ form_widget(form) }}
                 {{ form_end(form) }}
             {% endif %}
 
             {% if commentaries is not empty %}
 
-                <div class="btn-group ms-1">
+                <div class="btn-group ms-1 mt-5">
                     <button type="button" class="btn btn-outline-primary sort-btn" data-sort="date">newest</button>
                     <button type="button" class="btn btn-outline-primary sort-btn" data-sort="likes">top</button>
                 </div>
 
+                {# Commentary list #}
                 <div id="commentaries-container">
                     {% include 'main/post/index_sort_commentaries.html.twig' %}
                 </div>
@@ -134,52 +136,50 @@
             });
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("commentaries-container").addEventListener("click", function (event) {
             // Edit button processing
-            document.querySelectorAll(".edit-commentary-button").forEach(button => {
-                button.addEventListener("click", function () {
-                    const commentaryId = this.closest(".card").dataset.commentaryId;
-                    const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
-                    const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
-                    const editButton = this.closest(".card-body").querySelector(".edit-commentary-button");
-                    const deleteButton = this.closest(".card-body").querySelector(".delete-commentary-button");
+            if (event.target.closest(".edit-commentary-button")) {
+                const button = event.target.closest(".edit-commentary-button");
+                const commentaryId = button.closest(".card").dataset.commentaryId;
+                const commentaryText = button.closest(".card-body").querySelector(".commentary-text");
+                const editForm = button.closest(".card-body").querySelector(".edit-commentary-form");
+                const editButton = button.closest(".card-body").querySelector(".edit-commentary-button");
+                const deleteButton = button.closest(".card-body").querySelector(".delete-commentary-button");
 
-                    // Hide comment text and show edit form
-                    commentaryText.style.display = "none";
-                    editButton.style.display = "none";
-                    deleteButton.style.display = "none";
+                // Hide comment text and show edit form
+                commentaryText.style.display = "none";
+                editButton.style.display = "none";
+                deleteButton.style.display = "none";
 
-                    editForm.style.display = "block";
-                });
-            });
+                //Show edit form
+                editForm.style.display = "block";
+            }
 
             // Cancel button processing
-            document.querySelectorAll(".cancel-edit-button").forEach(button => {
-                button.addEventListener("click", function () {
-                    const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
-                    const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
-                    const editButton = this.closest(".card-body").querySelector(".edit-commentary-button");
-                    const deleteButton = this.closest(".card-body").querySelector(".delete-commentary-button");
+            if (event.target.closest(".cancel-edit-button")) {
+                const button = event.target.closest(".cancel-edit-button");
+                const commentaryText = button.closest(".card-body").querySelector(".commentary-text");
+                const editForm = button.closest(".card-body").querySelector(".edit-commentary-form");
+                const editButton = button.closest(".card-body").querySelector(".edit-commentary-button");
+                const deleteButton = button.closest(".card-body").querySelector(".delete-commentary-button");
 
-                    // Hide edit form and show comment text
-                    editForm.style.display = "none";
-                    commentaryText.style.display = "block";
-                    editButton.style.display = "inline-block";
-                    deleteButton.style.display = "inline-block";
-                });
-            });
+                // Hide edit form and show comment text
+                editForm.style.display = "none";
 
-            // Editing form submission processing(not ready)
-            /*document.querySelectorAll(".edit-commentary-form").forEach(form => {
-                form.addEventListener("submit", function (event) {
-                    event.preventDefault();
+                //Show commentary text, edit and delete buttons
+                commentaryText.style.display = "block";
+                editButton.style.display = "inline-block";
+                deleteButton.style.display = "inline-block";
+            }
 
-                    const commentaryId = this.dataset.commentaryId;
-                    const formData = new FormData(this);
+            // Delete button processing
+            if (event.target.closest(".delete-commentary-button")) {
+                const button = event.target.closest(".delete-commentary-button");
+                if (confirmAction()) {
+                    const commentaryId = button.closest(".card").dataset.commentaryId;
 
-                    fetch(`/commentaries/${commentaryId}/edit`, {
-                        method: "POST",
-                        body: formData,
+                    fetch(`/commentaries/${commentaryId}`, {
+                        method: "DELETE",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest"
                         }
@@ -187,41 +187,52 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                const commentaryText = this.closest(".card-body").querySelector(".commentary-text");
-                                const editForm = this.closest(".card-body").querySelector(".edit-commentary-form");
-
-                                // Update commentary text
-                                commentaryText.innerHTML = data.text;
-                                commentaryText.style.display = "block";
-                                editForm.style.display = "none";
+                                button.closest(".card").remove();
                             }
                         })
                         .catch(error => console.error("Error:", error));
-                });
-            });*/
+                }
+            }
+        });
 
-            // Delete button processing
-            document.querySelectorAll(".delete-commentary-button").forEach(button => {
-                button.addEventListener("click", function () {
-                    if (confirmAction()) {
-                        const commentaryId = this.closest(".card").dataset.commentaryId;
+        // Editing form submission processing
+        document.getElementById("commentaries-container").addEventListener("submit", function (event) {
+            if (event.target.closest(".edit-commentary-form")) {
 
-                        fetch(`/commentaries/${commentaryId}`, {
-                            method: "DELETE",
-                            headers: {
-                                "X-Requested-With": "XMLHttpRequest"
-                            }
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    this.closest(".card").remove();
-                                }
-                            })
-                            .catch(error => console.error("Error:", error));
+                event.preventDefault();
+
+                const button = event.target.closest(".edit-commentary-form");
+                const commentaryId = button.dataset.commentaryId;
+                const formData = new FormData(button);
+
+                fetch(`/commentaries/${commentaryId}/edit`, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
                     }
-                });
-            });
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const commentaryText = button.closest(".card-body").querySelector(".commentary-text");
+                            const editForm = button.closest(".card-body").querySelector(".edit-commentary-form");
+                            const editButton = button.closest(".card-body").querySelector(".edit-commentary-button");
+                            const deleteButton = button.closest(".card-body").querySelector(".delete-commentary-button");
+
+                            // Update commentary text
+                            commentaryText.innerHTML = data.text;
+
+                            //Show commentary text, edit and delete buttons
+                            commentaryText.style.display = "block";
+                            editForm.style.display = "none";
+                            editButton.style.display = "inline-block";
+                            deleteButton.style.display = "inline-block";
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+
         });
     </script>
 
