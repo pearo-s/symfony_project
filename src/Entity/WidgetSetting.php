@@ -19,6 +19,9 @@ class WidgetSetting
     #[ORM\Column(options: ['default' => false])]
     private ?bool $is_shown = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $last_parsed_time = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class WidgetSetting
     public function setIsShown(bool $is_shown): static
     {
         $this->is_shown = $is_shown;
+
+        return $this;
+    }
+
+    public function getLastParsedTime(): ?\DateTime
+    {
+        return $this->last_parsed_time;
+    }
+
+    public function setLastParsedTime(?\DateTime $last_parsed_time): static
+    {
+        $this->last_parsed_time = $last_parsed_time;
 
         return $this;
     }

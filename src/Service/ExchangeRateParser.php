@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\ExchangeRate;
+use App\Entity\WidgetSetting;
+use App\Repository\WidgetSettingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
@@ -11,9 +13,11 @@ class ExchangeRateParser
 {
     private EntityManagerInterface $entityManager;
     private string $url = 'https://nbkr.kg';
+    private WidgetSettingRepository $widgetSettingRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(WidgetSettingRepository $widgetSettingRepository, EntityManagerInterface $entityManager)
     {
+        $this->widgetSettingRepository = $widgetSettingRepository;
         $this->entityManager = $entityManager;
     }
 
@@ -43,6 +47,9 @@ class ExchangeRateParser
             $exchangeRate->setTomorrowDate($dates[1]);
 
             $this->entityManager->persist($exchangeRate);
+
+            $widgetSetting = $this->widgetSettingRepository->find(1);
+            $widgetSetting->setLastParsedTime((new \DateTime())->setTimezone(new \DateTimeZone('Asia/Bishkek')));
         });
 
         $this->entityManager->flush();
