@@ -88,7 +88,7 @@ final class CommentaryController extends AbstractController
 
 
     #[Route('/posts/{id}/commentaries/sort/{sortType}', name: 'sort_commentaries', methods: ['GET'])]
-    public function sortCommentaries(Post $post, string $sortType, CommentaryRepository $commentaryRepository): Response
+    public function sortCommentaries(Post $post, string $sortType, CommentaryRepository $commentaryRepository, CommentaryLikeRepository $commentaryLikeRepository): Response
     {
         if ($sortType === 'likes') {
             $commentaries = $commentaryRepository->sortCommentaryByLikes($post);
@@ -96,7 +96,13 @@ final class CommentaryController extends AbstractController
             $commentaries = $commentaryRepository->sortCommentariesByDate($post);
         }
 
-        return $this->render('main/post/index_sort_commentaries.html.twig', ['commentaries' => $commentaries, 'post' => $post]);
+        $likedCommentaries = [];
+
+        foreach ($commentaries as $commentary) {
+            $likedCommentaries[$commentary->getId()] = $commentaryLikeRepository->isCommentaryLikeByUser($commentary, $this->getUser());
+        }
+
+        return $this->render('main/post/index_sort_commentaries.html.twig', ['commentaries' => $commentaries, 'likedCommentaries' => $likedCommentaries, 'post' => $post]);
     }
 
 
