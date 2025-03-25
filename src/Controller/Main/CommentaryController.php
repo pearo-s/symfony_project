@@ -7,6 +7,7 @@ use App\Entity\CommentaryLike;
 use App\Entity\Post;
 use App\Form\CommentaryCreateType;
 use App\Repository\CommentaryLikeRepository;
+use App\Repository\CommentaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -87,14 +88,12 @@ final class CommentaryController extends AbstractController
 
 
     #[Route('/posts/{id}/commentaries/sort/{sortType}', name: 'sort_commentaries', methods: ['GET'])]
-    public function sortCommentaries(Post $post, string $sortType): Response
+    public function sortCommentaries(Post $post, string $sortType, CommentaryRepository $commentaryRepository): Response
     {
-        $commentaries = $post->getCommentaries()->toArray();
-
         if ($sortType === 'likes') {
-            usort($commentaries, fn($a, $b) => count($b->getCommentaryLikes()) <=> count($a->getCommentaryLikes()));
+            $commentaries = $commentaryRepository->sortCommentaryByLikes($post);
         } elseif ($sortType === 'date') {
-            usort($commentaries, fn($a, $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
+            $commentaries = $commentaryRepository->sortCommentariesByDate($post);
         }
 
         return $this->render('main/post/index_sort_commentaries.html.twig', ['commentaries' => $commentaries, 'post' => $post]);

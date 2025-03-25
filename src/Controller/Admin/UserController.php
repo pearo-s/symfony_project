@@ -7,6 +7,7 @@ use App\Form\UserCreateType;
 use App\Form\UserUpdateType;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +22,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
+    private const USERS_PER_PAGE = 10;
+
+    public function __construct(private ImageProcessing $imageProcessing)
+    {
+
+    }
+
     #[Route('/', name: 'index_user')]
     public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
@@ -31,7 +39,7 @@ final class UserController extends AbstractController
 
         $query = $userRepository->createSearchAndSortQueryBuilder($search, $sort, $direction);
 
-        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 10);
+        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), self::USERS_PER_PAGE);
 
         if ($request->isXmlHttpRequest()) {
             return $this->render('admin/user/index_search.html.twig', ['pagination' => $pagination]);
@@ -42,7 +50,7 @@ final class UserController extends AbstractController
 
 
     #[Route('/create', name: 'create_user', methods: ['POST', 'GET'])]
-    public function create(EntityManagerInterface $entityManager, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function create(EntityManagerInterface $entityManager, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
 
@@ -53,7 +61,7 @@ final class UserController extends AbstractController
             $avatarFile = $form->get('avatar')->getData();
 
             if ($avatarFile) {
-                $userRepository->saveAvatar($user, $avatarFile);
+                $this->imageProcessing->save($user, $avatarFile, 'user');
             }
 
             $user->setPassword($passwordHasher->hashPassword($user, $request->request->all()['user_create']['password']));
@@ -68,7 +76,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit_user', methods: ['POST', 'GET'])]
-    public function edit(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, int $id): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
         $userThumbnail = $user ? $user->getThumbnail() : null;
@@ -80,12 +88,12 @@ final class UserController extends AbstractController
             $avatarFile = $form->get('avatar')->getData();
 
             if ($avatarFile) {
-                $userRepository->removeAvatarFiles($user);
-                $userRepository->saveAvatar($user, $avatarFile);
+                $this->imageProcessing->removeAvatar($user);
+                $this->imageProcessing->save($user, $avatarFile, 'user');
             }
 
             if ($form->get('removeFile')->getData()) {
-                $userRepository->removeAvatarFiles($user);
+                $this->imageProcessing->removeAvatar($user);
                 $user->setAvatar(null);
                 $user->setThumbnail(null);
             }
@@ -101,13 +109,13 @@ final class UserController extends AbstractController
 
 
     #[Route('/{id}', name: 'delete_user', methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $entityManager, PostRepository $postRepository, int $id): Response
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
 
         if ($user->getPosts()) {
             foreach ($user->getPosts() as $post) {
-                $postRepository->removeImageFiles($post);
+                $this->imageProcessing->removeImage($post);
             }
         }
 

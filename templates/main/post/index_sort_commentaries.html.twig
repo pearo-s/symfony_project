@@ -36,7 +36,7 @@
 
                 <div class="position-absolute top-0 end-0 p-2">
                     <button class="btn btn-outline-danger border-0 p-0 like-button" data-commentary-id="{{ commentary.id }}">
-                        <i class="bi {% if app.user and commentary.isLikedBy(app.user) %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+                        <i class="bi {% if app.user and likedCommentaries[commentary.id] %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
                     </button>
                     <span class="ms-1 like-count">{{ commentary.getCommentaryLikes().count }}</span>
                 </div>

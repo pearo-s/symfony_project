@@ -63,13 +63,11 @@ final class ParseExchangeRatesMessageHandler
             return true;
         }
 
-        $hour = $now->format('H');
+        $parseHour = '17';
 
-        $lastParsedDate = strtotime($lastParsedDate->format('Y-m-d H:i:s'));
-        $now = strtotime($now->format('Y-m-d H:i:s'));
+        $nowHour = $now->format('H');
+        $lastParsedHour = $lastParsedDate->format('H');
 
-        $diff = $now - $lastParsedDate;
-
-        return $hour === '17' && ($diff >= 86400); //Если прошел как минимум день и сейчас 17 часов(время, когда на nbkr.kg обновляются данные)
+        return $nowHour === $parseHour && $lastParsedHour !== $parseHour; // Каждый день в определенный час
     }
 }

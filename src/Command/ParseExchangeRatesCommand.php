@@ -26,16 +26,18 @@ class ParseExchangeRatesCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-        ;
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->parser->fetchRates();
-        $output->writeln('Exchange rates updated');
-        return Command::SUCCESS;
+        try {
+            $this->parser->fetchRates();
+            echo 'Exchange rates successfully updated at ' . (new \DateTime())->setTimezone(new \DateTimeZone('Asia/Bishkek'))->format('Y-m-d H:i:s');
+            return Command::SUCCESS;
+        } catch (\Throwable $exception) {
+            echo 'Parse error: ' . $exception->getMessage();
+            return Command::FAILURE;
+        }
     }
 }

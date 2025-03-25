@@ -6,7 +6,7 @@ use App\Entity\User;
 
 use App\Form\UserUpdateType;
 use App\Repository\PostRepository;
-use App\Repository\UserRepository;
+use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,8 +18,12 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 #[Route('/users')]
 final class UserController extends AbstractController
 {
+    public function __construct(private ImageProcessing $imageProcessing)
+    {
+    }
+
     #[Route('/{id}/edit', name: 'main_edit_user', methods: ['POST', 'GET'])]
-    public function edit(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, $id): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
         $userThumbnail = $user ? $user->getThumbnail() : null;
@@ -31,12 +35,12 @@ final class UserController extends AbstractController
             $avatarFile = $form->get('avatar')->getData();
 
             if ($avatarFile) {
-                $userRepository->removeAvatarFiles($user);
-                $userRepository->saveAvatar($user, $avatarFile);
+                $this->imageProcessing->removeAvatar($user);
+                $this->imageProcessing->save($user, $avatarFile, 'user');
             }
 
             if ($form->get('removeFile')->getData()) {
-                $userRepository->removeAvatarFiles($user);
+                $this->imageProcessing->removeAvatar($user);
                 $user->setAvatar(null);
                 $user->setThumbnail(null);
             }
@@ -52,7 +56,7 @@ final class UserController extends AbstractController
 
 
     #[Route('/{id}', name: 'main_delete_user', methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, PostRepository $postRepository, Request $request, int $id): Response
+    public function delete(EntityManagerInterface $entityManager, PostRepository $postRepository, Request $request, int $id): Response
     {
         $user = $entityManager->getRepository(User::class)->find($id);
 
@@ -63,10 +67,10 @@ final class UserController extends AbstractController
         if ($user) {
 
             foreach ($user->getPosts() as $post) {
-                $postRepository->removeImageFiles($post);
+                $this->imageProcessing->removeImage($post);
             }
 
-            $userRepository->removeAvatarFiles($user);
+            $this->imageProcessing->removeAvatar($user);
 
             $entityManager->remove($user);
             $entityManager->flush();

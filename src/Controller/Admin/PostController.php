@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\PostCreateType;
 use App\Form\PostUpdateType;
 use App\Repository\PostRepository;
+use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,8 +19,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class PostController extends AbstractController
 {
+    public function __construct(private ImageProcessing $imageProcessing)
+    {
+
+    }
     #[Route('/create/{id}', name: 'create_post', methods: ['POST', 'GET'])]
-    public function create(PostRepository $postRepository, Request $request, EntityManagerInterface $entityManager, User $user): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, User $user): Response
     {
         $post = new Post();
 
@@ -30,7 +35,7 @@ final class PostController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
-                $postRepository->saveImage($post, $imageFile);
+                $this->imageProcessing->save($post, $imageFile, 'post');
             }
 
             $post->setUser($user);
@@ -46,7 +51,7 @@ final class PostController extends AbstractController
 
 
     #[Route('/{id}/edit', name: 'edit_post', methods: ['POST', 'GET'])]
-    public function edit(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request, int $id): Response
+    public function edit(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         $post = $entityManager->find(Post::class, $id);
         $postThumbnail = $post ? $post->getThumbnail() : null;
@@ -58,12 +63,12 @@ final class PostController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
-                $postRepository->removeImageFiles($post);
-                $postRepository->saveImage($post, $imageFile);
+                $this->imageProcessing->removeImage($post);
+                $this->imageProcessing->save($post, $imageFile, 'post');
             }
 
             if ($form->get('removeFile')->getData()) {
-                $postRepository->removeImageFiles($post);
+                $this->imageProcessing->removeImage($post);
                 $post->setImage(null);
                 $post->setThumbnail(null);
             }
@@ -79,11 +84,11 @@ final class PostController extends AbstractController
 
 
     #[Route('/{id}', name: 'delete_post', methods: ['DELETE'])]
-    public function delete(PostRepository $postRepository, EntityManagerInterface $entityManager, int $id): Response
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
 
-        $postRepository->removeImageFiles($post);
+        $this->imageProcessing->removeImage($post);
 
         $entityManager->remove($post);
         $entityManager->flush();

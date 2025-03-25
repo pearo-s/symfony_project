@@ -6,7 +6,9 @@ use App\Entity\Post;
 use App\Form\CommentaryCreateType;
 use App\Form\PostCreateType;
 use App\Form\PostUpdateType;
+use App\Repository\CommentaryLikeRepository;
 use App\Repository\PostRepository;
+use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,8 +20,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/posts')]
 final class PostController extends AbstractController
 {
+    private const POSTS_PER_PAGE = 12;
+
+    public function __construct(private ImageProcessing $imageProcessing)
+    {
+
+    }
+
     #[Route('/create', name: 'main_create_post', methods: ['POST', 'GET'])]
-    public function create(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request): Response
+    public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
         $post = new Post();
         $user = $this->getUser();
@@ -31,7 +40,7 @@ final class PostController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
-                $postRepository->saveImage($post, $imageFile);
+                $this->imageProcessing->save($post, $imageFile, 'post');
             }
 
             $post->setUser($user);
@@ -47,7 +56,7 @@ final class PostController extends AbstractController
 
     #[Route('/{id}/edit', name: 'main_edit_post', methods: ['POST', 'GET'])]
     #[IsGranted('POST_EDIT', subject: 'post')]
-    public function edit(PostRepository $postRepository, EntityManagerInterface $entityManager, Request $request, int $id, Post $post): Response
+    public function edit(EntityManagerInterface $entityManager, Request $request, int $id, Post $post): Response
     {
         $post = $entityManager->find(Post::class, $id);
         $postThumbnail = $post ? $post->getThumbnail() : null;
@@ -59,12 +68,12 @@ final class PostController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
-                $postRepository->removeImageFiles($post);
-                $postRepository->saveImage($post, $imageFile);
+                $this->imageProcessing->removeImage($post);
+                $this->imageProcessing->save($post, $imageFile, 'post');
             }
 
             if ($form->get('removeFile')->getData()) {
-                $postRepository->removeImageFiles($post);
+                $this->imageProcessing->removeImage($post);
                 $post->setImage(null);
                 $post->setThumbnail(null);
             }
@@ -79,11 +88,11 @@ final class PostController extends AbstractController
     }
 
     #[Route('/{id}', name: 'main_delete_post', methods: ['DELETE'])]
-    public function delete(PostRepository $postRepository, EntityManagerInterface $entityManager, int $id): Response
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $post = $entityManager->getRepository(Post::class)->find($id);
 
-        $postRepository->removeImageFiles($post);
+        $this->imageProcessing->removeImage($post);
 
         $entityManager->remove($post);
         $entityManager->flush();
@@ -101,7 +110,7 @@ final class PostController extends AbstractController
 
         $query = $postRepository->createSearchBuilder($search, $query);
 
-        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), 12);
+        $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), self::POSTS_PER_PAGE);
 
         if ($request->isXmlHttpRequest()) {
             return $this->render('main/post/index_search.html.twig', ['pagination' => $pagination]);
@@ -114,7 +123,7 @@ final class PostController extends AbstractController
 
 
     #[Route('/{id}', name: 'main_show_post')]
-    public function show(PostRepository $postRepository, int $id): Response
+    public function show(PostRepository $postRepository, CommentaryLikeRepository $commentaryLikeRepository, int $id): Response
     {
         $query = $postRepository->createQueryBuilder('p')->where('p.is_published = 1', "p.id = $id")->getQuery();
         $post = $query->getOneOrNullResult();
@@ -125,8 +134,13 @@ final class PostController extends AbstractController
 
         if ($post) {
             $commentaries = $post->getCommentaries();
+            $likedCommentaries = [];
+
+            foreach ($commentaries as $commentary) {
+                $likedCommentaries[$commentary->getId()] = $commentaryLikeRepository->isCommentaryLikeByUser($commentary, $this->getUser());
+            }
         }
 
-        return $this->render('main/post/show.html.twig', ['post' => $post, 'commentaries' => $commentaries, 'form' => $form]);
+        return $this->render('main/post/show.html.twig', ['post' => $post, 'commentaries' => $commentaries, 'likedCommentaries' => $likedCommentaries, 'form' => $form]);
     }
 }
