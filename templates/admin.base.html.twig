@@ -19,7 +19,10 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             {% if is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_ADMIN') %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ path('main_index_post') }}">Main site</a>
+                    <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Main site</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ path('index_product') }}">Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ path('app_setting') }}">Widgets setting</a>
@@ -34,7 +37,7 @@
 
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <img src="{{ asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="70px" height="60px">
+                            <img src="{{ app.user.thumbnail is empty ? asset('uploads/no_avatar.png') : asset('uploads/user/' ~ app.user.thumbnail) }}" alt="User Avatar" class="rounded me-2" width="70" height="60">
                             <b>{{ app.user.username }}</b>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

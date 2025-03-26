@@ -117,9 +117,10 @@ class Post
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAt(): void
+    public function setCreatedAt(): static
     {
-            $this->created_at = new \DateTimeImmutable();
+        $this->created_at = (new \DateTimeImmutable())->setTimezone(new \DateTimeZone('Asia/Bishkek'));
+        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
@@ -128,9 +129,10 @@ class Post
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAt(): void
+    public function setUpdatedAt(): static
     {
-        $this->updated_at = new \DateTimeImmutable();
+        $this->updated_at = (new \DateTimeImmutable())->setTimezone(new \DateTimeZone('Asia/Bishkek'));
+        return $this;
     }
 
     /**

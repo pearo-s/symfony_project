@@ -61,8 +61,9 @@ class CommentaryLike
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAt(): void
+    public function setCreatedAt(): static
     {
-        $this->created_at = new \DateTimeImmutable();
+        $this->created_at = (new \DateTimeImmutable())->setTimezone(new \DateTimeZone('Asia/Bishkek'));
+        return $this;
     }
 }

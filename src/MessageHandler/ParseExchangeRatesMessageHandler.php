@@ -66,8 +66,10 @@ final class ParseExchangeRatesMessageHandler
         $parseHour = '17';
 
         $nowHour = $now->format('H');
+        $nowDay = $now->format('d');
         $lastParsedHour = $lastParsedDate->format('H');
+        $lastParsedDay = $lastParsedDate->format('d');
 
-        return $nowHour === $parseHour && $lastParsedHour !== $parseHour; // Каждый день в определенный час
+        return $nowHour === $parseHour && $nowDay !== $lastParsedDay; // Каждый день в определенный час
     }
 }

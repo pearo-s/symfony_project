@@ -1,0 +1,32 @@
+<div class="container mt-5">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        {% for product in pagination %}
+
+            <div class="col">
+                <div class="card h-100">
+                    <a href="{{ path('show_product', {id: product.id}) }}">
+                        <img src="{{ asset('uploads/no_image.png') }}" class="card-img-top" alt="...">
+                    </a>
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.price }}$</h5>
+                        <p class="card-text">{{ product.name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-body-secondary">{{ product.createdAt|date('d.m.Y') }}</small>
+                    </div>
+                    <div class="card-footer">
+                        <a href="" class="btn btn-success btn-sm edit-commentary-button">Edit</a>
+                        <a href="" class="btn btn-danger btn-sm delete-commentary-button">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<div class="mt-5 ms-3">
+    {{ knp_pagination_render(pagination) }}
+</div>

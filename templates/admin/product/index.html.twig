@@ -1,0 +1,114 @@
+{% extends 'admin.base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-12 mt-5 mb-5">
+                <h1 class="text-center h2 my-6">Products</h1>
+            </div>
+        </div>
+
+        <div class="table-responsive my-3">
+
+            <div class="d-flex justify-content-between align-items-center  mb-3">
+
+                <form action="{{ path('index_product') }}" method="get" class="row g-2 w-50">
+
+                    <div class="col">
+                        <input type="text" name="minPrice" value="{{ app.request.get('minPrice') }}" class="form-control" placeholder="price from" aria-label="from">
+                    </div>
+
+                    <div class="col">
+                        <input type="text" name="maxPrice" value="{{ app.request.get('maxPrice') }}" class="form-control" placeholder="price to" aria-label="to">
+                    </div>
+
+                    <div class="col">
+
+                        <select class="form-select" name="colour">
+                            <option value="">Colour:</option>
+                            {% for colour in colours %}
+                                <option {{ app.request.get('colour') is same as colour.colour ? 'selected' : '' }} value="{{ colour.colour }}">{{ colour.colour }}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                    <div class="col">
+                        <select class="form-select" name="category">
+                            <option value="">Category:</option>
+                            {% for category in categories %}
+                                <option {{ app.request.get('category') == category.id ? 'selected' : '' }} value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">submit</button>
+                    </div>
+
+                </form>
+
+
+                <div class="d-flex align-items-center gap-5">
+
+                    <form method="get" action="{{ path('index_product') }}" class="d-flex" role="search">
+                        <input name="search" value="{{ app.request.get('search') }}" id="search-input"
+                               class="form-control me-2" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Price:
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('index_product', app.request.query.all|merge({sort: 'p.price', direction: 'asc'})) }}">ascending</a></li>
+                            <li><a class="dropdown-item" href="{{ path('index_product', app.request.query.all|merge({sort: 'p.price', direction: 'desc'})) }}">descending</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% if pagination|length > 0 %}
+
+                <div id="product-list">
+                    {% include 'admin/product/index_search.html.twig' %}
+                </div>
+
+            {% else %}
+
+                <div class="d-flex justify-content-center align-items-start vh-100 pt-5 text-danger">
+                    <h5>Posts not found</h5>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <script>
+        //ajax search for products
+        document.getElementById('search-input').addEventListener('input', function () {
+            let query = this.value.trim();
+            let url = '/admin/products?search=' + encodeURIComponent(query);
+
+            fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('product-list').innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+{% endblock %}

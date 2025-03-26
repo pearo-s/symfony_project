@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Commentary;
 use App\Entity\Post;
 use App\Entity\User;
+use App\Entity\WidgetSetting;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -33,6 +34,12 @@ class AppFixtures extends Fixture
         $admin->setRoles(['ROLE_ADMIN']);
 
         $manager->persist($admin);
+
+        $widgetSetting = new WidgetSetting();
+        $widgetSetting->setFrequency('daily');
+        $widgetSetting->setIsShown(0);
+
+        $manager->persist($widgetSetting);
 
         $users = [];
 

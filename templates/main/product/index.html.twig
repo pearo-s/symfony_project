@@ -13,17 +13,9 @@
 
         <div class="row">
             <div class="col-12 mt-5">
-                <h1 class="text-center h2 my-6">Posts</h1>
+                <h1 class="text-center h2 my-6">Products</h1>
             </div>
         </div>
-
-        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <div class="row mt-5">
-                <div class="col-12">
-                    <a class="btn btn-primary" href="{{ path('main_create_post') }}">Create a post</a>
-                </div>
-            </div>
-        {% endif %}
 
         <div class="table-responsive my-3">
 
@@ -35,30 +27,19 @@
 
                 <div class="d-flex align-items-center gap-5 mb-3">
 
-                    <form method="get" action="{{ path('main_index_post') }}" class="d-flex" role="search">
+                    <form method="get" action="{{ path('main_index_product') }}" class="d-flex" role="search">
                         <input name="search" value="{{ app.request.get('search') }}" id="search-input" class="form-control me-2" type="text" placeholder="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
 
-                    {#<div class="dropdown"> sorting
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Sort by:
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.name', direction: 'asc'}) }}">Name</a></li>
-                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.surname', direction: 'asc'}) }}">Surname</a></li>
-                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.username', direction: 'asc'}) }}">Username</a></li>
-                            <li><a class="dropdown-item" href="{{ path('index_user', {sort: 'u.id', direction: 'asc'}) }}">ID</a></li>
-                        </ul>
-                    </div>#}
                 </div>
 
             </div>
 
             {% if pagination|length > 0 %}
 
-                <div id="post-list">
-                    {% include 'main/post/index_search.html.twig' %}
+                <div id="product-list">
+                    {% include 'main/product/index_search.html.twig' %}
                 </div>
 
             {% else %}
@@ -73,15 +54,15 @@
     </div>
 
     <script>
-        //ajax search for posts
+        //ajax search for products
         document.getElementById('search-input').addEventListener('input', function () {
             let query = this.value.trim();
-            let url = '/posts?search=' + encodeURIComponent(query);
+            let url = '/products?search=' + encodeURIComponent(query);
 
             fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
                 .then(response => response.text())
                 .then(html => {
-                    document.getElementById('post-list').innerHTML = html;
+                    document.getElementById('product-list').innerHTML = html;
                 })
                 .catch(error => console.error('Error:', error));
         });
