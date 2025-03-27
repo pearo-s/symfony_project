@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250326103707 extends AbstractMigration
+final class Version20250327072931 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -26,6 +26,7 @@ final class Version20250326103707 extends AbstractMigration
         $this->addSql('CREATE TABLE product_image (id INT AUTO_INCREMENT NOT NULL, 
                                                         product_id INT NOT NULL, 
                                                         path VARCHAR(255) NOT NULL, 
+                                                        thumb_path VARCHAR(255) NOT NULL, 
                                                         INDEX IDX_64617F034584665A (product_id), 
                                                         PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 

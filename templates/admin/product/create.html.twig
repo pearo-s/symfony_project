@@ -1,0 +1,17 @@
+{% extends 'admin.base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 mt-5">
+                <h1 class="text-center h2 my-3">Product creation</h1>
+            </div>
+        </div>
+
+        {{ form_start(form, {'attr': {'class': 'w-50 mt-5 mb-5'}}) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}

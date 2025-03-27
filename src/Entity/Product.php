@@ -42,7 +42,7 @@ class Product
     /**
      * @var Collection<int, ProductImage>
      */
-    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', cascade: ['remove'], orphanRemoval: true)]
     private Collection $productImages;
 
     #[ORM\ManyToOne(inversedBy: 'products')]

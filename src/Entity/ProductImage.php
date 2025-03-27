@@ -20,6 +20,9 @@ class ProductImage
     #[ORM\Column(length: 255)]
     private ?string $path = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $thumb_path = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,18 @@ class ProductImage
     public function setPath(string $path): static
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function getThumbnail(): ?string
+    {
+        return $this->thumb_path;
+    }
+
+    public function setThumbnail(string $thumb_path): static
+    {
+        $this->thumb_path = $thumb_path;
 
         return $this;
     }

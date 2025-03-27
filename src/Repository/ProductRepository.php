@@ -17,13 +17,12 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function createSearchAndFilterBuilder(?string $search, string $sort, string $direction, ?array $filter): QueryBuilder
+    public function createSearchAndFilterBuilder(?array $requestData): QueryBuilder
     {
         $query = $this->createQueryBuilder('p');
-        dd($filter);
 
-        if(!empty($filter)) {
-            foreach ($filter as $key => $value) {
+        if(!empty($requestData)) {
+            foreach ($requestData as $key => $value) {
                 if ($value && $key === 'minPrice') {
                     $query->andWhere('p.price >= :minPrice')->setParameter('minPrice', $value);
                 } elseif ($value && $key === 'maxPrice') {
@@ -36,28 +35,15 @@ class ProductRepository extends ServiceEntityRepository
             }
         }
 
-        if ($search) {
+        if (isset($requestData['search'])) {
             $query->andWhere('p.name LIKE :q')
-                ->setParameter('q', '%' . $search . '%');
+                ->setParameter('q', '%' . $requestData['search'] . '%');
         }
 
-        /*if ($minPrice) {
-            $query->andWhere('p.price >= :minPrice')->setParameter('minPrice', $minPrice);
+
+        if (!empty($requestData['sort']) && !empty($requestData['direction'])) {
+            $query->orderBy($requestData['sort'], $requestData['direction']);
         }
-
-        if ($maxPrice) {
-            $query->andWhere('p.price <= :maxPrice')->setParameter('maxPrice', $maxPrice);
-        }
-
-        if ($colour) {
-            $query->andWhere('p.colour = :colour')->setParameter('colour', $colour);
-        }
-
-        if ($category) {
-            $query->andWhere('p.category = :category')->setParameter('category', $category);
-        }*/
-
-        $query->orderBy($sort, $direction);
 
         return $query;
     }
