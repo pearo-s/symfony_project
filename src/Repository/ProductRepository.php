@@ -43,6 +43,8 @@ class ProductRepository extends ServiceEntityRepository
 
         if (!empty($requestData['sort']) && !empty($requestData['direction'])) {
             $query->orderBy($requestData['sort'], $requestData['direction']);
+        } else {
+            $query->orderBy('p.id', 'ASC');
         }
 
         return $query;

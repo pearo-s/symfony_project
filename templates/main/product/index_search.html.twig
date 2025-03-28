@@ -1,11 +1,14 @@
 <div class="container mt-5">
     <div class="row row-cols-1 row-cols-md-3 g-4">
+
         {% for product in pagination %}
 
             <div class="col">
                 <div class="card h-100">
-                    <a href="">
-                        <img src="{{ asset('uploads/no_image.png') }}" class="card-img-top" alt="...">
+                    <a href="{{ path('main_show_product', {id: product.id}) }}">
+                        <img src="{{ product.productImages is not empty ? asset('uploads/product' ~ product.productImages[0].thumbnail) : asset('uploads/no_image.png') }}" class="card-img-top"
+                             data-images="{% for image in product.productImages %}{{ ' /uploads/product' ~ image.thumbnail }}{% endfor %}"
+                             alt="...">
                     </a>
 
                     <div class="card-body">
@@ -21,3 +24,30 @@
         {% endfor %}
     </div>
 </div>
+
+<div class="mt-5 ms-3">
+    {{ knp_pagination_render(pagination) }}
+</div>
+
+<script>
+    document.querySelectorAll('.card-img-top').forEach(img => {
+        let images = img.dataset.images.trim().split(' ');
+        console.log(images);
+        if (images.length > 1) {
+            let index = 0;
+            let interval;
+
+            img.addEventListener('mouseenter', function () {
+                interval = setInterval(() => {
+                    index = (index + 1) % images.length;
+                    this.src = images[index];
+                }, 700);
+            });
+
+            img.addEventListener('mouseleave', function () {
+                clearInterval(interval);
+                this.src = images[0];
+            });
+        }
+    });
+</script>

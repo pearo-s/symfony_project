@@ -39,7 +39,7 @@
 
             <div class="row mt-5">
                 <div class="col-12">
-                    <i><h4>{{ post.text|raw }}</h4></i>
+                    <h4>{{ post.text|raw }}</h4>
                     {% if post.image %}
                         <img src="{{ asset('uploads/post/' ~ post.image) }}" class="mt-5" width="100%"
                              alt="{{ post.title }}">

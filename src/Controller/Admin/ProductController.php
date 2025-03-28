@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Form\ProductCreateType;
+use App\Form\ProductUpdateType;
 use App\Repository\ProductCategoryRepository;
 use App\Repository\ProductRepository;
 use App\Service\ImageProcessing;
@@ -22,7 +23,9 @@ final class ProductController extends AbstractController
 {
     private const PRODUCTS_PER_PAGE = 9;
 
-    public function __construct(private ImageProcessing $imageProcessing) {}
+    public function __construct(private readonly ImageProcessing $imageProcessing)
+    {
+    }
 
     #[Route('/', name: 'index_product', methods: ['POST', 'GET'])]
     public function index(ProductRepository $productRepository, ProductCategoryRepository $productCategoryRepository, PaginatorInterface $paginator, Request $request): Response
@@ -76,6 +79,46 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('admin/product/create.html.twig', ['form' => $form]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit_product', methods: ['POST', 'GET'])]
+    public function edit(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    {
+        $product = $entityManager->getRepository(Product::class)->find($id);
+        $productImages = $product ? $product->getProductImages() : null;
+
+        $form = $this->createForm(ProductUpdateType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFiles = $form->get('images')->getData();
+
+            if ($imageFiles) {
+                foreach ($imageFiles as $imageFile) {
+                    $productImage = new ProductImage();
+                    $productImage->setProduct($product);
+                    $this->imageProcessing->save($productImage, $imageFile, 'product');
+                    $entityManager->persist($productImage);
+                }
+            }
+
+            $removeFiles = $request->request->all('removeFiles') ?? [];
+
+            if ($removeFiles) {
+                foreach ($removeFiles as $productImageId) {
+                    $productImage = $entityManager->getRepository(ProductImage::class)->find($productImageId);
+                    $this->imageProcessing->removeProductImage($productImage);
+                    $entityManager->remove($productImage);
+                }
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Product successfully updated');
+
+            return $this->redirectToRoute('show_product', ['id' => $product->getId()]);
+        }
+
+        return $this->render('admin/product/edit.html.twig', ['form' => $form, 'product' => $product, 'productImages' => $productImages]);
     }
 
     #[Route('/{id}', name: 'delete_product', methods: ['DELETE'])]

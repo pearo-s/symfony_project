@@ -54,7 +54,7 @@ final class ParseExchangeRatesMessageHandler
 
         $diff = $now - $lastParsedDate;
 
-        return $diff >= 3600; //Если прошел как минимум час
+        return $diff >= 3600; //If it's been at least an hour
     }
 
     private function shouldParseDaily(?\DateTime $lastParsedDate, \DateTime $now): bool
@@ -70,6 +70,6 @@ final class ParseExchangeRatesMessageHandler
         $lastParsedHour = $lastParsedDate->format('H');
         $lastParsedDay = $lastParsedDate->format('d');
 
-        return $nowHour === $parseHour && ($lastParsedHour !== $parseHour || $nowDay !== $lastParsedDay); // Каждый день в определенный час
+        return $nowHour === $parseHour && ($lastParsedHour !== $parseHour || $nowDay !== $lastParsedDay); // Every day at a certain hour
     }
 }

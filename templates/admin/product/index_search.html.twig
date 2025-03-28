@@ -21,7 +21,7 @@
                     <div class="card-footer">
                         <div class="row">
                             <div class="d-flex justify-content-lg-begin gap-2">
-                                <a class="btn btn-sm btn-success" href="">Edit</a>
+                                <a class="btn btn-sm btn-success" href="{{ path('edit_product', {id: product.id}) }}">Edit</a>
 
                                 <form action="{{ path('delete_product', {'id': product.id}) }}" method="post">
                                     <input type="hidden" name="_method" value="DELETE">

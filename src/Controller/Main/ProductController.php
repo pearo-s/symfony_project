@@ -2,7 +2,10 @@
 
 namespace App\Controller\Main;
 
+use App\Entity\Product;
+use App\Repository\ProductCategoryRepository;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +18,14 @@ final class ProductController extends AbstractController
     private const PRODUCTS_PER_PAGE = 9;
 
     #[Route('/', name: 'main_index_product')]
-    public function index(ProductRepository $productRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProductRepository $productRepository, ProductCategoryRepository $productCategoryRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $query = $productRepository->createQueryBuilder('p');
+        $requestData = $request->query->all();
 
-        $search = $request->query->get('search');
+        $colours = $productRepository->getProductDistinctColours();
+        $categories = $productCategoryRepository->findAll();
 
-        $query = $productRepository->createSearchBuilder($search, $query);
+        $query = $productRepository->createSearchAndFilterBuilder($requestData);
 
         $pagination = $paginator->paginate($query, $request->query->getInt('page', 1), self::PRODUCTS_PER_PAGE);
 
@@ -31,6 +35,16 @@ final class ProductController extends AbstractController
 
         return $this->render('main/product/index.html.twig', [
             'pagination' => $pagination,
+            'colours' => $colours,
+            'categories' => $categories,
         ]);
+    }
+
+    #[Route('/{id}', name: 'main_show_product', methods: ['GET'])]
+    public function show(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $product = $entityManager->getRepository(Product::class)->find($id);
+
+        return $this->render('main/product/show.html.twig', ['product' => $product]);
     }
 }

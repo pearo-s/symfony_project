@@ -1,4 +1,4 @@
-{% extends 'admin.base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block body %}
 
@@ -16,40 +16,28 @@
 
             <div class="row">
                 <div class="col-12 mt-5">
-                    <h1 class="text-center h2 my-3">Product details</h1>
+                    <h1 class="text-center h2 my-3">{{ product.name }}</h1>
+                </div>
+                <div class="col-12 mt-5">
+                    {% if product.description %}
+                        <h4>{{ product.description|raw }}</h4>
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-start text-danger font-italic">
+                            <h3><i>No description</i></h3>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="row mt-5">
-                <div class="d-flex justify-content-lg-begin gap-2">
-                    <a class="btn btn-success" href="{{ path('edit_product', {id: product.id}) }}">Edit</a>
-
-                    <form action="{{ path('delete_product', {id: product.id}) }}" method="post">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <input type="hidden" name="_token" value=" {{ csrf_token('delete' ~ product.id) }} ">
-                        <button type="submit" onclick="return confirmAction()" class="btn btn-danger">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row mt-3">
                 <div class="col-12">
                     <ul class="list-group">
-                        <li class="list-group-item"><strong>ID: </strong>{{ product.id }}</li>
                         <li class="list-group-item"><strong>Name: </strong>{{ product.name }}</li>
-                        <li class="list-group-item">
-                            <strong>Description: </strong>{{ product.description is empty ? '<i class="text-danger font-italic">No data</i>' : product.description|raw }}
-                        </li>
                         <li class="list-group-item"><strong>Price: </strong>{{ product.price }}$</li>
                         <li class="list-group-item">
                             <strong>Colour: </strong>{{ product.colour is empty ? '<i class="text-danger font-italic">No data</i>' : product.colour }}
                         </li>
                         <li class="list-group-item"><strong>Quantity: </strong>{{ product.quantity }}</li>
-                        <li class="list-group-item"><strong>Date of
-                                creation: </strong>{{ product.createdAt|date('d.m.Y') }}
-                        </li>
                     </ul>
                 </div>
             </div>
