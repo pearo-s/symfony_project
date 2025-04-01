@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
         "dragonmantank/cron-expression": "^3.4",
+        "easycorp/easyadmin-bundle": "^4.24",
         "ezyang/htmlpurifier": "^4.18",
         "fakerphp/faker": "^1.24",
         "friendsofsymfony/ckeditor-bundle": "^2.6",
