@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\User;
 use App\Form\UserCreateType;
 use App\Form\UserUpdateType;
-use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,11 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-
 
 #[Route('/admin/users')]
-#[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
     private const USERS_PER_PAGE = 10;

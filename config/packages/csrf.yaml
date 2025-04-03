@@ -2,10 +2,12 @@
 framework:
     form:
         csrf_protection:
-            token_id: submit
+            enabled: true
+            #token_id: submit
 
     csrf_protection:
-        stateless_token_ids:
-            - submit
-            - authenticate
-            - logout
+        #stateless_token_ids:
+        enabled: true
+            #- submit
+            #- authenticate
+            #- logout

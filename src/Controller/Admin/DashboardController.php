@@ -17,14 +17,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin', routes: [
     'new' => ['routePath' => '/create', 'routeName' => 'create'],
     'detail' => ['routeName' => 'show']
 ])]
-#[IsGranted('ROLE_ADMIN')]
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
@@ -48,6 +45,14 @@ class DashboardController extends AbstractDashboardController
         ;
     }
 
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        return parent::configureUserMenu($user)
+            ->setName($user->getUserIdentifier())
+            ->setAvatarUrl($user->getAvatar() ? '/uploads/user' . $user->getAvatar() : '/uploads/no_avatar.png')
+            ;
+    }
+
     public function configureMenuItems(): iterable
     {
         return [
@@ -64,16 +69,12 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Products ', 'fa-solid fa-cart-shopping', Product::class)->setBadge($this->productRepository->count()),
 
             MenuItem::subMenu('Settings', 'fa-solid fa-gear')->setSubItems([
-                MenuItem::linkToRoute('Widget settings', null, 'app_setting')
+                MenuItem::linkToRoute('Widget settings', 'fa-solid fa-table', 'app_setting')
             ]),
+
+            MenuItem::section(),
+            MenuItem::linkToRoute('Back to main site', 'fa-solid fa-arrow-left', 'home'),
         ];
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
-    }
-
-    public function configureUserMenu(UserInterface $user): UserMenu
-    {
-        return parent::configureUserMenu($user)
-            ->setAvatarUrl($user->getAvatar() ? '/uploads/user' . $user->getAvatar() : '/uploads/no_avatar.png')
-        ;
     }
 }

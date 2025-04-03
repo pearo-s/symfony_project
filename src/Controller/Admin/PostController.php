@@ -6,7 +6,6 @@ use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostCreateType;
 use App\Form\PostUpdateType;
-use App\Repository\PostRepository;
 use App\Service\ImageProcessing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,7 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/posts')]
-#[IsGranted('ROLE_ADMIN')]
 final class PostController extends AbstractController
 {
     public function __construct(private ImageProcessing $imageProcessing)
