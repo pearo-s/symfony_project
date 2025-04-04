@@ -3,17 +3,17 @@ services:
     build: .
     container_name: symfony_app
     ports:
-      - "8001:8000"
+      - "8000:8000"
     volumes:
       - .:/var/www
     environment:
       APP_ENV: dev
     depends_on:
       - db
-    links:
-      - db
     networks:
       - symfony_network
+    tty: true
+    stdin_open: true
 
   db:
     image: mysql:8

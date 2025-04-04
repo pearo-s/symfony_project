@@ -14,9 +14,11 @@
                 </thead>
                 <tbody>
 
+
                 {% for x in 4..0 %}
                     <tr>
-                        <td><img src="https://flagcdn.com/w40/{{ countryCodes[x] }}.png" alt="{{ countryCodes[x] }}" class="currency-flag">{{ rates[x].currency }}</td>
+                        <td><img src="https://flagcdn.com/w40/{{ countryCodes[x] }}.png" alt="{{ countryCodes[x] }}"
+                                 class="currency-flag">{{ rates[x].currency }}</td>
                         <td class="small-text">{{ rates[x].todayRate|number_format(4) }}</td>
                         <td class="small-text">{{ rates[x].tomorrowRate|number_format(4) }}
                             {% if rates[x].todayRate > rates[x].tomorrowRate %}
@@ -29,6 +31,7 @@
                         </td>
                     </tr>
                 {% endfor %}
+
 
                 </tbody>
             </table>

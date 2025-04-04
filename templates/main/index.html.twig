@@ -10,7 +10,7 @@
         {% endfor %}
     {% endfor %}
 
-    {% if settings.isShown %}
+    {% if settings and rates and settings.isShown %}
         {% include 'main/widgets/exchange_rate_nbkr.html.twig' %}
     {% endif %}
 {% endblock %}
