@@ -32,7 +32,7 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $avatarFile = $form->get('avatar')->getData(); dd($avatarFile);
+            $avatarFile = $form->get('avatar')->getData();
 
             if ($avatarFile) {
                 $this->imageProcessing->removeAvatar($user);
